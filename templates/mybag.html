@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>我的福袋</title>
+
+<style>
+body{
+    background:#062b2f;
+    color:#fff;
+    text-align:center;
+    font-family: Arial;
+    margin:0;
+    padding-top:80px;
+}
+
+/* 上方 */
+.top-bar{
+    position:fixed;
+    top:0;
+    width:100%;
+    background:#041f22;
+    padding:12px;
+    display:flex;
+    justify-content:space-between;
+    z-index:999;
+}
+
+.nav-btn{
+    background:#FFD700;
+    color:#000;
+    padding:8px 14px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+/* 期數 */
+.period{
+    color:#FFD700;
+    margin-top:10px;
+}
+
+/* 提示 */
+.notice{
+    color:#00eaff;
+    margin-top:10px;
+    font-size:14px;
+}
+
+/* 🔥 升級卡片 */
+.top-card{
+    margin:25px auto;
+    padding:25px;
+    width:520px;
+    background:linear-gradient(180deg,#082c30,#041f22);
+    border-radius:25px;
+    box-shadow:0 0 30px rgba(0,255,255,0.15);
+}
+
+/* 下載 */
+.download-all{
+    display:inline-block;
+    margin-bottom:15px;
+    padding:14px 30px;
+    background:linear-gradient(45deg,#00c2d1,#00eaff);
+    color:#000;
+    border-radius:25px;
+    font-weight:bold;
+}
+
+/* Tabs */
+.tabs{
+    margin-top:10px;
+}
+
+.tabs button{
+    margin:8px;
+    padding:12px 22px;
+    border:none;
+    border-radius:25px;
+    background:#0f3a40;
+    color:#00eaff;
+    cursor:pointer;
+    font-weight:bold;
+    font-size:15px;
+    transition:0.3s;
+}
+
+/* hover */
+.tabs button:hover{
+    background:linear-gradient(45deg,#00c2d1,#00eaff);
+    color:#000;
+    box-shadow:0 0 10px #00eaff;
+}
+
+/* 🔥 選中 */
+.tabs button.active{
+    background:linear-gradient(45deg,#00c2d1,#00eaff);
+    color:#000;
+    box-shadow:0 0 12px #00eaff;
+}
+
+/* 表格 */
+.section{
+    display:none;
+    margin-top:20px;
+}
+
+table{
+    width:90%;
+    margin:10px auto;
+    border-collapse:collapse;
+}
+
+th, td{
+    padding:12px;
+    border-bottom:1px solid #333;
+}
+
+th{
+    background:#111;
+    color:#00eaff;
+}
+
+/* 按鈕 */
+.btn{
+    padding:8px 12px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.copy{ background:#00c2d1; color:#000; }
+.open{ background:#ff6b00; color:#fff; }
+
+</style>
+
+</head>
+
+<body>
+
+<!-- 上方 -->
+
+<div class="top-bar">
+    <div>
+        <a href="/" class="nav-btn">首頁</a>
+        <a href="/bag" class="nav-btn">商店</a>
+    </div>
+</div>
+
+<h2>我的福袋</h2>
+
+<div class="period">
+期數：{{ period }}<br>
+日期：{{ today }}
+</div>
+
+<div class="notice">
+未開封福袋會自動更新為最新一期號碼，請放心使用
+</div>
+
+<div class="top-card">
+
+```
+<a href="/download_all" class="download-all">
+    下載全部號碼
+</a>
+
+<div class="tabs">
+    <button onclick="showTab('準提金袋', this)">準提金袋</button>
+    <button onclick="showTab('準提銀袋', this)">準提銀袋</button>
+    <button onclick="showTab('大金袋', this)">大金袋</button>
+    <button onclick="showTab('大銀袋', this)">大銀袋</button>
+</div>
+```
+
+</div>
+
+{% set types = ["準提金袋","準提銀袋","大金袋","大銀袋"] %}
+
+{% for t in types %}
+
+<div class="section" id="{{ t }}">
+
+<h3>{{ t }}</h3>
+
+<table>
+<tr>
+<th>狀態</th>
+<th>號碼</th>
+<th>期數</th>
+<th>操作</th>
+</tr>
+
+{% for b in bags if b.type == t %}
+
+<tr>
+
+<td>
+{% if b.numbers %}
+已開
+{% else %}
+未開
+{% endif %}
+</td>
+
+<td>
+{% if b.numbers %}
+{{ b.numbers }}
+{% else %}
+尚未開袋
+{% if b.auto_updated %}
+<div style="color:#00eaff;font-size:12px;">
+自動更新最新期數
+</div>
+{% endif %}
+{% endif %}
+</td>
+
+<td>
+{% if b.numbers %}
+{{ period }}
+{% else %}
+-
+{% endif %}
+</td>
+
+<td>
+{% if b.numbers %}
+<button class="btn copy" onclick="copyText('{{ b.numbers }}')">複製</button>
+{% else %}
+<a href="/open/{{ b.index }}">
+<button class="btn open">開袋</button>
+</a>
+{% endif %}
+</td>
+
+</tr>
+{% endfor %}
+
+</table>
+
+</div>
+{% endfor %}
+
+<script>
+function copyText(text){
+    navigator.clipboard.writeText(text);
+    alert("已複製: " + text);
+}
+
+function showTab(type, btn){
+
+    // 🔥 記住選擇
+    localStorage.setItem("selected_tab", type);
+
+    document.querySelectorAll('.section').forEach(el=>{
+        el.style.display = 'none';
+    });
+
+    document.querySelectorAll('.tabs button').forEach(b=>{
+        b.classList.remove('active');
+    });
+
+    document.getElementById(type).style.display = 'block';
+
+    if(btn){
+        btn.classList.add('active');
+    }
+}
+
+// 🔥 關鍵修正
+window.onload = function(){
+
+    let saved = localStorage.getItem("selected_tab") || "準提金袋";
+
+    // 找對應按鈕
+    let btns = document.querySelectorAll('.tabs button');
+
+    btns.forEach(btn=>{
+        if(btn.innerText === saved){
+            btn.click();
+        }
+    });
+}
+</script>
+
+</body>
+</html>

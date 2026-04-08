@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>AI推薦號碼</title>
+
+<style>
+body{
+    background:#062b2f;
+    color:#fff;
+    text-align:center;
+    font-family: Arial;
+    margin:0;
+    padding-top:40px;   /* 🔥 往上移 */
+}
+
+/* 卡片 */
+.card{
+    width:600px;
+    margin:30px auto;
+    padding:35px;
+    background:linear-gradient(180deg,#0b2f36,#041f22);
+    border-radius:25px;
+    box-shadow:0 0 30px rgba(0,255,255,0.15);
+}
+
+/* 標題 */
+.title{
+    font-size:26px;
+    margin-bottom:15px;
+}
+
+/* 號碼（主角） */
+.numbers{
+    font-size:44px;
+    color:#FFD700;
+    margin:20px 0 25px;
+    letter-spacing:3px;
+}
+
+/* 按鈕區 */
+.btn-group{
+    margin-top:15px;
+}
+
+/* 按鈕 */
+.btn{
+    margin:8px;
+    padding:14px 26px;   /* 🔥 放大 */
+    border:none;
+    border-radius:12px;
+    font-size:16px;      /* 🔥 字變大 */
+    font-weight:bold;
+    cursor:pointer;
+    color:#fff;
+}
+
+/* 顏色 */
+.btn-green{ background:#28a745; }
+.btn-orange{ background:#ff9800; }
+
+/* 提示 */
+.notice{
+    margin-top:20px;
+    font-size:13px;
+    color:#aaa;   /* 🔥 變低調 */
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="title">
+        🤖 AI推薦號碼
+    </div>
+
+    <div class="numbers">
+        {{ numbers }}
+    </div>
+
+    <div style="margin-top:15px; font-size:14px; color:#aaa; line-height:1.8;">
+    🤖 AI推薦說明：<br>
+    AI推薦為基礎分析模型（統計參數較少），提供參考號碼；<br>
+    進階分析可透過福袋系統提升命中機率<br><br>
+
+   👤 使用規則：<br>
+   會員可免費使用 AI推薦功能<br>
+   非會員每日可免費使用 1 次
+   </div>
+
+    <div class="btn-group">
+        <!-- ✅ 只留兩個重點 -->
+        <a href="/ai">
+            <button class="btn btn-green">重新產生</button>
+        </a>
+
+        <a href="/check">
+            <button class="btn btn-orange">去對獎</button>
+        </a>
+    </div>
+
+    <div class="notice">
+        本系統為AI模擬分析，僅供娛樂參考
+    </div>
+
+</div>
+
+</body>
+</html>

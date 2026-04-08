@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>會員登入</title>
+
+    <style>
+        body {
+            background: #0b1f2a;
+            color: white;
+            font-family: Arial;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+        }
+
+        .home-btn a {
+            color: #00c6ff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .card {
+            background: #132f3f;
+            padding: 40px;
+            border-radius: 15px;
+            width: 340px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #00c6ff;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .register-box {
+            margin-top: 20px;
+            padding: 18px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+
+        .price {
+            color: #00ffcc;
+            font-weight: bold;
+            margin: 5px 0;
+            font-size: 18px;
+        }
+
+        .bonus {
+            color: #ffd700;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .small {
+            font-size: 13px;
+            opacity: 0.85;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 回首頁 -->
+<div class="home-btn">
+    <a href="/">← 回首頁</a>
+</div>
+
+<div class="card">
+
+    <h2>會員登入</h2>
+
+    <form>
+        <input type="text" placeholder="帳號">
+        <input type="password" placeholder="密碼">
+
+        <button type="submit">登入</button>
+    </form>
+
+    <!-- 註冊區 -->
+    <div class="register-box">
+
+        <div>還沒有帳號？</div>
+
+        <div class="price">註冊只需 NT$100</div>
+
+        <div class="bonus">
+            🎁 註冊送 150準提金 + 1個大金袋 + 2個大銀袋
+        </div>
+
+        <div class="small">
+            ✔ 可用準提金購買福袋<br>
+            ✔ AI推薦號分析<br>
+            ✔ 福袋系統（策略玩法）<br>
+            ✔ 對獎紀錄與歷史分析<br><br>
+
+            🤖 AI推薦：會員免費使用<br>
+            非會員每日可免費使用 1 次
+        </div>
+
+        <br>
+
+        <a href="/register">
+            <button style="background:#ff9800;">
+                立即註冊開通
+            </button>
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

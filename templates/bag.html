@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>福袋商店</title>
+
+<style>
+body{
+    background:#062b2f;
+    color:#fff;
+    text-align:center;
+    font-family: Arial;
+    margin:0;
+    padding-top:80px;
+}
+
+/* 上方列 */
+.top-bar{
+    position: fixed;
+    top:0;
+    width:100%;
+    background:#041f22;
+    padding:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:999;
+}
+
+.left{
+    margin-left:20px;
+    color:#FFD700;
+}
+
+.right{
+    margin-right:20px;
+}
+
+.nav-btn{
+    background:#FFD700;
+    color:#000;
+    padding:8px 14px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+/* 標題 */
+h1{
+    font-size:34px;
+    margin-bottom:5px;
+}
+
+/* 金額 */
+.money{
+    color:#FFD700;
+    font-size:24px;
+    margin:10px;
+}
+
+/* 🔥 主卡片（重點） */
+.store-card{
+    display:flex;
+    justify-content:center;
+    gap:50px;
+    margin-top:30px;
+    background:#0b1f2a;
+    padding:35px 50px;
+    border-radius:25px;
+    box-shadow:0 0 25px rgba(0,255,255,0.08);
+    width:fit-content;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+/* 左右區塊 */
+.box{
+    width:240px;
+}
+
+/* 標題 */
+.box h3{
+    color:#FFD700;
+    margin-bottom:15px;
+}
+
+/* 說明 */
+.note{
+    white-space: nowrap;
+    color:#aaa;
+    font-size:13px;
+    margin-bottom:15px;
+}
+
+/* 按鈕 */
+.btn{
+    display:block;
+    margin:10px auto;
+    padding:12px;
+    width:100%;
+    background:#00c2d1;
+    color:#000;
+    text-decoration:none;
+    border-radius:10px;
+    font-weight:bold;
+    transition:0.2s;
+}
+
+.btn:hover{
+    background:#00eaff;
+}
+
+/* 輸入框 */
+input{
+    padding:10px;
+    width:100%;
+    border-radius:8px;
+    border:none;
+    margin-top:10px;
+}
+
+/* 底下說明 */
+.store-note{
+    margin-top:15px;
+    color:#00ffcc;
+    font-size:14px;
+}
+
+/* 進入福袋 */
+.enter-btn{
+    margin-top:40px;
+    display:inline-block;
+    padding:15px 40px;
+    background:#FFD700;
+    color:#000;
+    border-radius:12px;
+    font-size:18px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 上方 -->
+<div class="top-bar">
+    <div class="left">⚠️ 僅供娛樂參考，請理性投注</div>
+    <div class="right">
+        <a href="/" class="nav-btn">🏠 首頁</a>
+    </div>
+</div>
+
+<h1>🎁 福袋商店</h1>
+<div style="margin-top:15px; font-size:14px; color:#aaa; line-height:1.8;">
+🎯 福袋說明：<br>
+福袋系統由AI模型長時間運算分析，<br>
+透過多重數據優化組合，<br>
+使中獎機會相對提升，使用時間越長效果越穩定
+</div>
+
+<div class="money">
+💰 準提金：{{ money }}
+</div>
+
+<!-- 🔥 主卡片 -->
+<div class="store-card">
+
+    <!-- 🎁 購買 -->
+    <div class="box">
+        <h3>🎁 福袋購買</h3>
+
+    <div class="note">
+         準提金袋 ＞ 準提銀袋 ＞ 大金袋 ＞ 大銀袋
+        </div>
+
+        <a href="/buy/silver" class="btn">🥈 大銀袋（50）</a>
+        <a href="/buy/gold" class="btn">🥇 大金袋（100）</a>
+        <a href="/buy/pray_silver" class="btn">✨ 準提銀袋（200）</a>
+        <a href="/buy/pray_gold" class="btn">🔥 準提金袋（1000）</a>
+    </div>
+
+    <!-- 💰 儲值 -->
+    <div class="box">
+        <h3>💰 準提金儲值</h3>
+
+        <div class="note">
+            提準金用於購買福袋
+        </div>
+
+        <a href="/topup/100" class="btn">💳 儲值 100</a>
+        <a href="/topup/500" class="btn">💳 儲值 500</a>
+
+        <form action="/topup/custom" method="POST">
+            <input 
+                type="number" 
+                name="amount" 
+                placeholder="輸入儲值金額"
+                min="1"
+                required
+            >
+            <button class="btn" type="submit">💳 立即儲值</button>
+        </form>
+    </div>
+
+</div>
+
+<!-- 🔥 說明 -->
+<div class="store-note">
+提準金用於購買福袋使用
+</div>
+
+<!-- 進入福袋 -->
+<a href="/mybag" class="enter-btn">
+🎁 進入我的福袋
+</a>
+
+</body>
+</html>

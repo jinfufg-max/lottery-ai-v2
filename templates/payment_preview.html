@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>付款流程說明</title>
+
+    <style>
+        body {
+            background: #0b1f2a;
+            color: white;
+            font-family: Arial;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: #132f3f;
+            padding: 40px;
+            border-radius: 15px;
+            width: 360px;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .price {
+            color: #00ffcc;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .bonus {
+            color: #ffd700;
+            font-weight: bold;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .desc {
+            opacity: 0.9;
+            line-height: 1.8;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px 0;
+            background: #00c6ff;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 18px;
+            color: #00c6ff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="title">付款流程說明</div>
+
+    <div class="price">開通費用：NT$50</div>
+
+    <form method="POST" action="/payment-success">
+
+        <input type="hidden" name="username" value="{{ username }}">
+        <input type="hidden" name="password" value="{{ password }}">
+
+        <button type="submit">確認付款</button>
+
+    </form>
+
+</div>
+
+    <div class="bonus">
+        🎁 完成開通後可獲得：<br>
+        150 準提金<br>
+        2 個大銀袋
+    </div>
+
+    <div class="desc">
+        目前付款功能建置中。<br>
+        後續將串接綠界付款，完成付款後自動開通會員資格與贈送獎勵。
+    </div>
+
+    <a href="/register" class="btn">返回註冊頁</a>
+    <a href="/" class="back">← 回首頁</a>
+</div>
+
+</body>
+</html>

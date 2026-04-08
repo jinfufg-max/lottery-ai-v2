@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>對獎系統</title>
+
+<style>
+body {
+    background: #0b1f2a;
+    color: white;
+    font-family: Arial;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 50px;
+}
+
+.card {
+    background: #111;
+    padding: 30px;
+    border-radius: 15px;
+    width: 400px;
+}
+
+.title {
+    color: #ffd700;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+input {
+    width: 70%;
+    padding: 8px;
+    margin: 5px;
+    border-radius: 8px;
+    border: none;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #00c6ff;
+    color: white;
+    cursor: pointer;
+}
+
+.match {
+    color: #00ff99;
+    margin-left: 10px;
+}
+
+.error {
+    color: red;
+}
+</style>
+
+<script>
+// 🔔 音效
+function beep(){
+    new Audio("https://www.soundjay.com/button/beep-07.wav").play();
+}
+
+// 🎯 自動格式
+function formatInput(el){
+
+    let raw = el.value.replace(/[^0-9]/g, "");
+    let result = [];
+    let used = new Set();
+
+    for(let i=0; i<raw.length; i+=2){
+
+        let pair = raw.substring(i, i+2);
+
+        if(pair.length < 2){
+            result.push(pair);
+            continue;
+        }
+
+        let num = parseInt(pair);
+
+        if(num > 49){
+            beep();
+            continue;
+        }
+
+        if(used.has(num)){
+            beep();
+            continue;
+        }
+
+        used.add(num);
+        result.push(pair);
+    }
+
+    if(result.length > 6){
+        beep();
+        result = result.slice(0,6);
+    }
+
+    el.value = result.join(",");
+}
+</script>
+
+</head>
+
+<body>
+
+<h2>🎯 對獎系統</h2>
+
+<a href="/">
+    <button style="background:#ffd700;color:black;">🏠 回首頁</button>
+</a>
+
+<div class="container">
+
+    <!-- 左：AI -->
+    <div class="card">
+        <div class="title">🎁 AI預測命中參考（中3居多）</div>
+
+        {% if ai_data %}
+            {% for row in ai_data %}
+                <div>
+                    {{ row.numbers }} → {{ row.match }} 個
+                </div>
+            {% endfor %}
+        {% else %}
+            <div>沒有資料</div>
+        {% endif %}
+    </div>
+
+    <!-- 中：對獎 -->
+    <div class="card">
+        <div class="title">📊 本期號碼</div>
+        <div>{{ draw }}</div>
+
+        <form method="POST">
+
+            {% for i in range(5) %}
+                <div>
+                    第{{i+1}}組：
+                    <input 
+                        name="set{{i+1}}"
+                        value="{{ inputs[i] }}"
+                        onkeyup="formatInput(this)"
+                        placeholder="輸入號碼"
+                    >
+
+                    {% if results %}
+                        {% if results[i] == "❌" %}
+                            <span class="error">格式錯誤</span>
+                        {% elif results[i] != "" %}
+                            <span class="match">👉 {{ results[i] }} 個</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <br>
+            <button type="submit">開始對獎</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

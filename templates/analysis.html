@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI分析</title>
+
+<style>
+body{
+    background:#0b1f2a;
+    color:white;
+    text-align:center;
+    padding:40px; /* ↓ 從60改40，縮高度 */
+    font-size:17px; /* ↓ 稍微降 */
+    line-height:1.7;
+}
+
+/* ❗ 解決白點問題 */
+ul{
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+
+button, a {
+    cursor:pointer;
+}
+
+h2{
+    font-size:28px; /* ↓ 32 → 28 */
+    margin-bottom:15px;
+}
+
+li{
+    margin:10px 0;
+    font-size:20px; /* ↓ 24 → 20 */
+}
+
+button{
+    padding:12px 24px; /* ↓ 微縮 */
+    background:#ff9800;
+    border:none;
+    border-radius:10px;
+    color:white;
+    font-size:16px; /* ↓ 18 → 16 */
+    font-weight:bold;
+    transition:0.2s;
+}
+
+button:hover{
+    background:#ffa726;
+    transform:scale(1.05);
+}
+
+.trust{
+    color:#aaa;
+    font-size:13px;
+}
+
+.highlight{
+    color:#00eaff;
+    font-weight:bold;
+}
+
+.lock{
+    color:#ffcc00;
+    font-weight:bold;
+}
+
+/* 🔥 卡片優化（關鍵） */
+.box{
+    margin:15px auto; /* ↓ 間距縮 */
+    padding:16px; /* ↓ 20 → 16 */
+    background:#082f34;
+    border-radius:12px;
+    width:100%;
+    max-width:380px; /* ⭐ 不要太窄 */
+}
+
+/* 🔥 主號碼（讓它好看但不誇張） */
+.main-number{
+    font-size:34px; /* ↓ 原本太大 */
+    font-weight:bold;
+    letter-spacing:6px; /* ↓ 8 → 6 */
+    margin-top:8px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>🎯 特別號交叉分析</h2>
+
+{% if user %}
+
+<p>特別號：{{ sp }}</p>
+
+<ul>
+{% for n, score in result %}
+<li>
+    🔥 {{ n }}
+    <span class="highlight">▲ {{ score }}%</span>
+</li>
+{% endfor %}
+</ul>
+
+<p class="trust">
+※ 本分析為歷史關聯統計結果
+</p>
+
+{% else %}
+
+<p class="lock">
+🔒 此為AI核心分析，請登入會員查看
+</p>
+
+<p class="trust">
+👉 分析「特別號 {{ sp }}」出現時，最容易同時開出的號碼組合
+</p>
+
+<p class="highlight">
+🔥 解鎖完整AI關聯分析 + 提升中獎機會
+</p>
+
+<p style="font-size:14px;">
+👉 已分析 {{ sample_count }} 期歷史數據
+</p>
+
+<a href="/login">
+<button>立即解鎖AI預測</button>
+</a>
+
+{% endif %}
+
+
+<h2>📊 AI數據分析（會員專屬）</h2>
+
+{% if user %}
+
+<!-- 🔥 AI推薦組合 -->
+<div class="box">
+
+<div class="highlight" style="font-size:16px;">
+🔥 AI推薦組合（本期最佳）
+</div>
+
+<div class="main-number">
+{{ hot | join(' ') }}
+</div>
+
+</div>
+
+<!-- 💥 福袋轉換區 -->
+<div class="box">
+
+<p class="lock">
+🔒 完整中獎組合尚未解鎖
+</p>
+
+<p class="trust">
+目前顯示為基礎熱門推算  
+完整版本已經過AI關聯 + 權重優化
+</p>
+
+<p class="highlight">
+👉 命中率提升版本已封裝於福袋
+</p>
+
+<a href="/bag">
+<button>🎁 前往福袋解鎖</button>
+</a>
+
+<p style="color:#ff5252;font-size:12px;margin-top:8px;">
+⚠ 每期不同，錯過即失效
+</p>
+
+</div>
+
+<!-- 📊 原本資料 -->
+<div class="trust" style="margin-top:20px;">
+
+🔥 熱門：{{ hot | join(', ') }}  
+｜ ❄ 冷門：{{ cold | join(', ') }}  
+｜ 📊 命中率：{{ hit_rate }}%
+
+</div>
+
+{% else %}
+
+<p class="lock">
+🔒 登入後可查看完整AI分析
+</p>
+
+<p class="highlight">
+🔥 AI已計算 {{ sample_count }} 期數據結果
+</p>
+
+<a href="/login">
+<button>立即登入</button>
+</a>
+
+{% endif %}
+
+<br>
+
+<a href="/" class="highlight">回首頁</a>
+
+</body>
+</html>

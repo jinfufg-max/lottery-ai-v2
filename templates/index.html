@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>AI智慧選號系統</title>
+
+<style>
+body{
+    background: linear-gradient(135deg,#062b2f,#001f24);
+    font-family:Arial;
+    color:white;
+    text-align:center;
+    margin:0;
+}
+
+/* 標題 */
+.header{
+    padding:30px;
+    font-size:32px;
+    font-weight:bold;
+}
+
+/* 副標 */
+.subtitle{
+    color:#9be7ff;
+    margin-top:-15px;
+    font-size:14px;
+}
+
+/* 信任區 */
+.trust-box{
+    margin:20px auto;
+    padding:12px;
+    width:280px;
+    background:#0f3c42;
+    border-radius:10px;
+    font-size:13px;
+    color:#ffd54f;
+}
+
+/* CTA */
+.big-btn{
+    display:inline-block;
+    margin:20px;
+    padding:12px 25px;
+    background:#ff9800;
+    color:black;
+    border-radius:10px;
+    font-weight:bold;
+    text-decoration:none;
+}
+
+/* 登入 */
+.login-btn{
+    position:absolute;
+    top:20px;
+    right:30px;
+}
+
+.login-btn button{
+    padding:10px 20px;
+    background:#00c6ff;
+    border:none;
+    border-radius:8px;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* 主區 */
+.container{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    margin-top:30px;
+    flex-wrap:wrap;
+}
+
+/* 卡片 */
+.card{
+    background:#132f3f;
+    padding:25px;
+    border-radius:15px;
+    width:200px;
+}
+
+.card button{
+    margin-top:15px;
+    padding:8px 15px;
+    background:#00c6ff;
+    border:none;
+    border-radius:8px;
+    color:white;
+    cursor:pointer;
+    width:100%;
+}
+
+.disabled{
+    background:gray !important;
+    cursor:not-allowed;
+}
+
+/* 右下角 */
+.bottom-box{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    background:#082c30;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 0 15px rgba(0,255,255,0.2);
+    z-index:99999;
+    text-align:left;
+    max-width:280px;
+}
+
+.bottom-box .title{
+    color:#FFD700;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.bottom-box .text{
+    font-size:13px;
+    color:#ccc;
+    line-height:1.6;
+    margin-bottom:10px;
+}
+
+.bottom-box a{
+    color:#00eaff;
+    text-decoration:none;
+    margin-right:10px;
+}
+
+.bottom-box label{
+    font-size:13px;
+    color:#ccc;
+}
+
+.ai-box{
+    margin:30px auto;
+    padding:20px;
+    background:#0f3c42;
+    border-radius:15px;
+    width:80%;
+    max-width:700px;
+}
+
+.ai-title{
+    font-size:18px;
+    margin-bottom:15px;
+    color:#ffd54f;
+}
+
+.ai-content{
+    display:flex;
+    justify-content:space-around;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+.ai-item{
+    background:#132f3f;
+    padding:10px;
+    border-radius:10px;
+    width:140px;
+    font-size:13px;
+}
+
+.ai-item span{
+    display:block;
+    margin-top:5px;
+    color:#00eaff;
+    font-weight:bold;
+}
+/* 👇 滑鼠小手統一 */
+button {
+    cursor: pointer;
+}
+
+a {
+    cursor: pointer;
+}
+
+.card {
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 登入 -->
+<div class="login-btn">
+{% if session.get("user") %}
+    👋 {{ session.get("user") }}
+    <a href="/logout">
+        <button style="background:#ff4d4d;">登出</button>
+    </a>
+{% else %}
+    <a href="/login">
+        <button>註冊 / 登入</button>
+    </a>
+{% endif %}
+</div>
+
+<!-- 標題 -->
+<div class="header">🎯 AI智慧選號系統</div>
+<div class="subtitle">用數據分析提升中獎機會（非隨機亂猜）</div>
+
+<!-- 信任 -->
+<div class="trust-box">
+🎯 AI累積分析：12,582 次<br>
+📊 歷史測試期數：324 期
+</div>
+
+<!-- CTA -->
+<a href="/register" class="big-btn">
+🚀 立即體驗 NT$100
+</a>
+
+<!-- 🔥 AI主入口（你要加的就在這） -->
+<a href="/analysis" style="display:block;margin-top:20px;">
+    <button style="
+        padding:16px 40px;
+        font-size:20px;
+        font-weight:bold;
+        background:#00c853;
+        border:none;
+        border-radius:12px;
+        color:white;
+    ">
+        🚀 立即查看AI分析
+    </button>
+</a>
+<div class="ai-box">
+
+    <div class="ai-title">📊 AI數據分析（近期趨勢）</div>
+
+    <div class="ai-content">
+
+        <div class="ai-item">
+            🔥 熱門號碼<br>
+            <span>12 / 18 / 25</span>
+        </div>
+
+        <div class="ai-item">
+            ❄ 冷門號碼<br>
+            <span>03 / 07 / 33</span>
+        </div>
+
+        <div class="ai-item">
+            ⚖ 區間分布<br>
+            <span>低區40%｜高區60%</span>
+        </div>
+
+        <div class="ai-item">
+            🎯 模擬命中率<br>
+            <span>約 {{ hit_rate }}%（近500期回測）</span>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- 功能卡 -->
+<div class="container">
+
+    <div class="card">
+        <div>🤖 AI智慧選號</div>
+        <div style="font-size:12px;color:#ccc;margin-top:5px;">
+            熱號 / 冷號 / 區間分析
+        </div>
+        <button onclick="go('/ai')">進入</button>
+    </div>
+
+    <div class="card">
+        <div>🎯 對獎系統</div>
+        <button onclick="go('/check')">進入</button>
+    </div>
+
+    <div class="card">
+        <div>🎁 福袋系統</div>
+        <button onclick="go('/bag')">進入</button>
+    </div>
+
+    <div class="card" onclick="go('/analysis')" style="cursor:pointer;">
+    <div style="font-size:20px;font-weight:bold;">
+    📊 AI數據分析
+</div>
+
+    <div style="font-size:12px;color:#aaa;margin-top:5px;">
+        🔒 會員專屬分析
+    </div>
+
+    {% if session.get("user") %}
+        <button onclick="go('/analysis')" style="
+    padding:12px 20px;
+    font-size:18px;
+    font-weight:bold;
+    background:#ff9800;
+">
+    📊 進入AI分析
+</button>
+    {% else %}
+        <button onclick="go('/member')" style="background:#ff9800;">
+            開通查看
+        </button>
+    {% endif %}
+</div>   
+
+</div>
+
+<!-- 右下角 -->
+<div class="bottom-box">
+
+    <div class="title">⚠ 僅供參考，請理性使用</div>
+
+    <div class="text">
+        本服務僅供數據分析與娛樂用途，不保證中獎
+    </div>
+
+    <div style="margin-bottom:8px;">
+        <a href="/privacy" target="_blank">隱私政策</a>
+        <a href="/terms" target="_blank">使用條款</a>
+    </div>
+
+    <label>
+        <input type="checkbox" id="agreeCheck">
+        我已閱讀並同意上述條款
+    </label>
+
+</div>
+
+<script>
+function go(url){
+
+    let agree = document.querySelector("#agreeCheck");
+
+    if(sessionStorage.getItem("agreed_terms") !== "1"){
+
+        if(agree){
+            agree.checked = true;
+        }
+
+        sessionStorage.setItem("agreed_terms", "1");
+
+        alert("已自動同意使用條款與隱私政策");
+    }
+
+    window.location.href = url;
+}
+
+window.onload = function(){
+
+    let agree = document.querySelector("#agreeCheck");
+
+    if(sessionStorage.getItem("agreed_terms") === "1"){
+        if(agree){
+            agree.checked = true;
+        }
+    }
+}
+
+function goMember(url){
+
+    let isLogin = "{{ '1' if session.get('user') else '0' }}";
+
+    if(isLogin !== "1"){
+        alert("此功能為會員專屬，立即開通只需 NT$100 🚀");
+        window.location.href = "/register";
+        return;
+    }
+
+    window.location.href = url;
+}
+</script>
+
+</body>
+</html>

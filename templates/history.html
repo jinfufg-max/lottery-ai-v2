@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>歷史紀錄</title>
+
+<style>
+body {
+    margin:0;
+    font-family: Arial;
+    background: linear-gradient(135deg, #071b26, #0b2c3d);
+    color:white;
+    text-align:center;
+}
+
+.container {
+    margin-top:50px;
+}
+
+.card {
+    background:#102f40;
+    margin:15px auto;
+    padding:20px;
+    width:320px;
+    border-radius:12px;
+}
+
+.footer {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    font-size: 12px;
+    color: #aaa;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📜 歷史紀錄</h1>
+
+<div class="container">
+
+{% if history %}
+    {% for h in history %}
+    <div class="card">
+        <p>🎯 {{ h.user_nums }}</p>
+        <p>🤖 {{ h.ai_nums }}</p>
+        <p>✅ 命中 {{ h.match }} 個</p>
+    </div>
+    {% endfor %}
+{% else %}
+    <p>⚠️ 尚無資料</p>
+{% endif %}
+
+<br>
+<a href="/">🏠 回首頁</a>
+
+</div>
+
+<div class="footer">
+⚠️ 本系統為AI模擬分析，僅供參考
+</div>
+
+</body>
+</html>
