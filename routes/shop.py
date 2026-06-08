@@ -973,11 +973,7 @@ def checkout_cart():
                     cart_total,
                     order_no
                 )
-            )           
-
-            # =========================
-            # 扣庫存
-            # =========================          
+            )
 
             c.execute(
                 """
@@ -1044,36 +1040,13 @@ def checkout_cart():
                     now
                 )
             )
-
+             
+            
             conn.commit()
 
-            print("===== EMAIL DEBUG =====")
-            print("email =", email)
-            print("order_no =", order_no)
-
-            try:
-                send_order_email(
-                    to_email=email,
-                    order_no=order_no,
-                    total=cart_total
-                )
-                print("買家信成功")
-            except Exception as e:
-                print("買家信失敗 =", e)
-
-            try:
-                send_admin_order_email(
-                    order_no=order_no,
-                    name=name,
-                    phone=phone,
-                    total=cart_total,
-                    payment_type=payment_type
-                )
-                print("管理員信成功")
-            except Exception as e:
-                print("管理員信失敗 =", e)
-
             session.pop("cart", None)
+
+            conn.close()
 
             return render_template(
                 "order_success.html",
@@ -1082,24 +1055,38 @@ def checkout_cart():
                 payment="points",
                 name=name
             )
-        
+
+            之後再研究背景寄信
+                # send_order_email(
+                #     to_email=email,
+                #     order_no=order_no,
+                #     total=cart_total
+                # )
+
+                # send_admin_order_email(
+                #     order_no=order_no,
+                #     name=name,
+                #     phone=phone,
+                #     total=cart_total,
+                #     payment_type=payment_type
+                # )
+
+
         # =========================
         # 信用卡 / 貨到付款
         # =========================
 
         conn.commit()
-        conn.close()        
+        conn.close()
 
         session.pop("cart", None)
 
         return redirect(
             url_for(
                 "payment.ecpay_checkout",
-
                 order_no=order_no
             )
-        )
-    
+        )   
     
 
     cart = session.get("cart", {})
