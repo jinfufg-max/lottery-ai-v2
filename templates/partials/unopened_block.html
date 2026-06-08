@@ -1,0 +1,31 @@
+{% for b in bags if b.type == t and not b.numbers %}
+
+<div class="result-row">
+
+    <div>
+
+        <div class="numbers" style="color:#FFD54F;">
+            尚未開袋
+        </div>
+
+        <div class="time">
+            自動套用最新一期號碼
+        </div>
+
+        <div class="hit" style="opacity:0;">
+            命中 0 顆
+        </div>
+
+    </div>
+
+    <form class="open-form" action="/open/{{ b.id }}" method="POST">
+
+        <button class="btn open">
+            開袋
+        </button>
+
+    </form>
+
+</div>
+
+{% endfor %}

@@ -1,292 +1,627 @@
 <!DOCTYPE html>
 
 <html lang="zh-TW">
+
 <head>
-<meta charset="UTF-8">
-<title>我的福袋</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的福袋</title>
 
-<style>
-body{
-    background:#062b2f;
-    color:#fff;
-    text-align:center;
-    font-family: Arial;
-    margin:0;
-    padding-top:80px;
-}
+    <style>
+        body {
+            background: #062b2f;
+            color: #fff;
+            text-align: center;
+            font-family: Arial;
+            margin: 0;
+            padding-top: 60px;
+        }
 
-/* 上方 */
-.top-bar{
-    position:fixed;
-    top:0;
-    width:100%;
-    background:#041f22;
-    padding:12px;
-    display:flex;
-    justify-content:space-between;
-    z-index:999;
-}
+        /* 上方 */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: #041f22;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 999;
+        }
 
-.nav-btn{
-    background:#FFD700;
-    color:#000;
-    padding:8px 14px;
-    border-radius:8px;
-    text-decoration:none;
-    font-weight:bold;
-}
+        .nav-btn {
+            background: #FFD700;
+            color: #000;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-/* 期數 */
-.period{
-    color:#FFD700;
-    margin-top:10px;
-}
+        /* 期數 */
+        .period {
+            color: #FFD700;
+            margin-top: 10px;
+        }
 
-/* 提示 */
-.notice{
-    color:#00eaff;
-    margin-top:10px;
-    font-size:14px;
-}
+        /* 提示 */
+        .notice {
+            color: #00eaff;
+            margin-top: 10px;
+            font-size: 18px;
+        }
 
-/* 🔥 升級卡片 */
-.top-card{
-    margin:25px auto;
-    padding:25px;
-    width:520px;
-    background:linear-gradient(180deg,#082c30,#041f22);
-    border-radius:25px;
-    box-shadow:0 0 30px rgba(0,255,255,0.15);
-}
+        .period-box {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
 
-/* 下載 */
-.download-all{
-    display:inline-block;
-    margin-bottom:15px;
-    padding:14px 30px;
-    background:linear-gradient(45deg,#00c2d1,#00eaff);
-    color:#000;
-    border-radius:25px;
-    font-weight:bold;
-}
+        .period-card {
+            background: #082c30;
+            padding: 12px 22px;
+            border-radius: 18px;
+            min-width: 220px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.12);
+        }
 
-/* Tabs */
-.tabs{
-    margin-top:10px;
-}
+        .period-card .label {
+            color: #00eaff;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
 
-.tabs button{
-    margin:8px;
-    padding:12px 22px;
-    border:none;
-    border-radius:25px;
-    background:#0f3a40;
-    color:#00eaff;
-    cursor:pointer;
-    font-weight:bold;
-    font-size:15px;
-    transition:0.3s;
-}
+        .main-date {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-top: 10px;
+        }
 
-/* hover */
-.tabs button:hover{
-    background:linear-gradient(45deg,#00c2d1,#00eaff);
-    color:#000;
-    box-shadow:0 0 10px #00eaff;
-}
+        .sub-period {
+            margin-top: 8px;
+            font-size: 15px;
+            color: #aaa;
+        }
 
-/* 🔥 選中 */
-.tabs button.active{
-    background:linear-gradient(45deg,#00c2d1,#00eaff);
-    color:#000;
-    box-shadow:0 0 12px #00eaff;
-}
+        /* 🔥 升級卡片 */
+        .top-card {
+            margin: 25px auto;
+            padding: 25px;
+            width: 600px;
+            background: linear-gradient(180deg, #082c30, #041f22);
+            border-radius: 22px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.15);
+        }
 
-/* 表格 */
-.section{
-    display:none;
-    margin-top:20px;
-}
+        /* 下載 */
+        .download-all {
+            display: inline-block;
+            margin-bottom: 10px;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #00c2d1, #00eaff);
+            color: #000;
+            border-radius: 25px;
+            font-weight: bold;
+        }
 
-table{
-    width:90%;
-    margin:10px auto;
-    border-collapse:collapse;
-}
+        /* Tabs */
+        .tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 26px;
+            margin-top: 10px;
+            justify-items: center;
+        }
+        
+        /* hover */
+        .tabs button {
+            width: 200px;
+            padding: 10px 10px;
+            border: none;
+            border-radius: 20px;
 
-th, td{
-    padding:12px;
-    border-bottom:1px solid #333;
-}
+            background: rgba(0, 255, 255, 0.06);
+            border: 1px solid rgba(0, 255, 255, 0.14);
 
-th{
-    background:#111;
-    color:#00eaff;
-}
+            color: #7ee7ff;
+            font-size: 20px;
+            font-weight: bold;
 
-/* 按鈕 */
-.btn{
-    padding:8px 12px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
-}
+            cursor: pointer;
+            transition: 0.25s;
+        }
 
-.copy{ background:#00c2d1; color:#000; }
-.open{ background:#ff6b00; color:#fff; }
+        /* 🔥 選中 */
+        .tabs button.active {
+            background: #00eaff;
+            color: #000;
+            box-shadow: 0 0 20px #00eaff;
+        }
 
-</style>
+        /* 表格 */
+        .section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 90%;
+            margin: 10px auto;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #333;
+        }
+
+        th {
+            background: #111;
+            color: #00eaff;
+        }
+
+        /* 按鈕 */
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .copy {
+            background: #00c2d1;
+            color: #000;
+        }
+
+        .open {
+            background: #ff6b00;
+            color: #fff;
+        }
+
+        .result-row {
+            width: 90%;
+            margin: 0px auto;
+            padding: 0px;
+            border-radius: 12px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            background: rgba(0, 255, 200, 0.05);
+
+            border: 1px solid rgba(0, 255, 200, 0.08);
+
+            box-shadow: 0 0 12px rgba(0, 255, 200, 0.06);
+        }
+
+        .numbers {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            text-align: left;
+        }
+
+        .hit {
+            margin-top: 0px;
+            font-size: 15px;
+            color: #ffe082;
+            text-align: left;
+        }
+
+        .time {
+            margin-top: 0px;
+            font-size: 15px;
+            color: #9be7d8;
+            text-align: left;
+        }
+
+        .delete {
+            background: #ff3b30;
+            color: #fff;
+        }
+
+        .lottery-balls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .ball {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .blue {
+            background: #20cfff;
+            color: #000;
+        }
+
+        .yellow {
+            background: gold;
+            color: #000;
+        }
+
+        h2 {
+            font-size: 38px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 20px;
+
+            color: #fff;
+
+            text-shadow: 0 0 12px rgba(0, 255, 255, 0.25);
+        }
+
+        @media (max-width:768px) {
+
+            body {
+                overflow-x: hidden;
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+
+            .top-card {
+                width: auto;
+                margin: 20px 10px;
+                padding: 15px;
+                border-radius: 16px;
+            }
+
+            .notice {
+                font-size: 13px;
+                padding: 0 10px;
+                line-height: 1.5;
+            }
+
+            .period-card {
+                min-width: unset;
+                width: 100%;
+                padding: 10px;
+                border-radius: 14px;
+            }
+
+            .main-date {
+                font-size: 16px;
+            }
+
+            .tabs {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .tabs button {
+                width: 100%;
+                font-size: 18px;
+            }
+
+            .result-row {
+                width: 100%;
+                padding: 10px;
+                box-sizing: border-box;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                margin-bottom: 8px;
+                border-radius: 10px;
+            }
+
+            .numbers {
+                font-size: 15px;
+                line-height: 1.5;
+                word-break: break-word;
+            }
+
+            .hit,
+            .time {
+                font-size: 12px;
+            }
+
+            .btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .ball {
+                width: 30px;
+                height: 30px;
+                font-size: 16px;
+            }
+
+        }
+    </style>
 
 </head>
 
 <body>
 
-<!-- 上方 -->
+    <!-- 上方 -->
 
-<div class="top-bar">
-    <div>
-        <a href="/" class="nav-btn">首頁</a>
-        <a href="/bag" class="nav-btn">商店</a>
+    <div class="top-bar">
+        <div>
+            <a href="/" class="nav-btn">首頁</a>
+            <a href="/bag" class="nav-btn">福袋</a>
+        </div>
     </div>
-</div>
 
-<h2>我的福袋</h2>
+    <h2>🎁 我的幸運福袋</h2>
 
-<div class="period">
-期數：{{ period }}<br>
-日期：{{ today }}
-</div>
+    <div class="period-box">
 
-<div class="notice">
-未開封福袋會自動更新為最新一期號碼，請放心使用
-</div>
+        <div class="period-card">
 
-<div class="top-card">
+            <div class="label">
+                🎯 開獎日期（下一期）
+            </div>
 
-```
-<a href="/download_all" class="download-all">
-    下載全部號碼
-</a>
+            <div class="main-date">
+                {{ next_draw_date }}
+            </div>
 
-<div class="tabs">
-    <button onclick="showTab('準提金袋', this)">準提金袋</button>
-    <button onclick="showTab('準提銀袋', this)">準提銀袋</button>
-    <button onclick="showTab('大金袋', this)">大金袋</button>
-    <button onclick="showTab('大銀袋', this)">大銀袋</button>
-</div>
-```
+        </div>
 
-</div>
+        <div class="period-card">
 
-{% set types = ["準提金袋","準提銀袋","大金袋","大銀袋"] %}
+            <div class="label">
+                🎟 開獎日期（可兌獎）
+            </div>
 
-{% for t in types %}
+            <div class="main-date">
+                {{ last_draw_date }}
 
-<div class="section" id="{{ t }}">
+            </div>
+        </div>
 
-<h3>{{ t }}</h3>
+    </div>
 
-<table>
-<tr>
-<th>狀態</th>
-<th>號碼</th>
-<th>期數</th>
-<th>操作</th>
-</tr>
+    </div>
 
-{% for b in bags if b.type == t %}
+    <div class="notice">
+        ✨ 未開封福袋 自動更新 最新一期號碼 ✨
+    </div>
 
-<tr>
+    <div class="top-card">
 
-<td>
-{% if b.numbers %}
-已開
-{% else %}
-未開
-{% endif %}
-</td>
+        <a href="/download_bags" class="download-all">
+            下載全部號碼
+        </a>
 
-<td>
-{% if b.numbers %}
-{{ b.numbers }}
-{% else %}
-尚未開袋
-{% if b.auto_updated %}
-<div style="color:#00eaff;font-size:12px;">
-自動更新最新期數
-</div>
-{% endif %}
-{% endif %}
-</td>
+        <div class="tabs">
 
-<td>
-{% if b.numbers %}
-{{ period }}
-{% else %}
--
-{% endif %}
-</td>
+            <button onclick="showTab('🔥 準提金袋', this)">
+                🔥 準提金袋 {{ bags
+                |selectattr("type","equalto","🔥 準提金袋")
+                |selectattr("status","equalto","pending")
+                |list|length }}
+            </button>
 
-<td>
-{% if b.numbers %}
-<button class="btn copy" onclick="copyText('{{ b.numbers }}')">複製</button>
-{% else %}
-<a href="/open/{{ b.index }}">
-<button class="btn open">開袋</button>
-</a>
-{% endif %}
-</td>
+            <button onclick="showTab('✨ 準提銀袋', this)">
+                ✨ 準提銀袋 {{ bags
+                |selectattr("type","equalto","✨ 準提銀袋")
+                |selectattr("status","equalto","pending")
+                |list|length }}
+            </button>
 
-</tr>
-{% endfor %}
+            <button onclick="showTab('🥇 大金袋', this)">
+                🥇 大金袋 {{ bags
+                |selectattr("type","equalto","🥇 大金袋")
+                |selectattr("status","equalto","pending")
+                |list|length }}
+            </button>
 
-</table>
+            <button onclick="showTab('🥈 大銀袋', this)">
+                🥈 大銀袋 {{ bags
+                |selectattr("type","equalto","🥈 大銀袋")
+                |selectattr("status","equalto","pending")
+                |list|length }}
+            </button>
 
-</div>
-{% endfor %}
+        </div>
 
-<script>
-function copyText(text){
-    navigator.clipboard.writeText(text);
-    alert("已複製: " + text);
-}
+    </div>
+    <div class="lottery-balls">
 
-function showTab(type, btn){
+        {% set nums = latest_numbers.split(",") %}
 
-    // 🔥 記住選擇
-    localStorage.setItem("selected_tab", type);
+        {% for n in nums[:6] %}
+        <div class="ball blue">
+            {{ n }}
+        </div>
+        {% endfor %}
 
-    document.querySelectorAll('.section').forEach(el=>{
-        el.style.display = 'none';
-    });
+        {% if nums|length > 6 %}
+        <div class="ball yellow">
+            {{ nums[6] }}
+        </div>
+        {% endif %}
 
-    document.querySelectorAll('.tabs button').forEach(b=>{
-        b.classList.remove('active');
-    });
+    </div>
 
-    document.getElementById(type).style.display = 'block';
+    {% set types = [
+    "🔥 準提金袋",
+    "✨ 準提銀袋",
+    "🥇 大金袋",
+    "🥈 大銀袋"
+    ] %}
 
-    if(btn){
-        btn.classList.add('active');
-    }
-}
+    {% for t in types %}
 
-// 🔥 關鍵修正
-window.onload = function(){
+    <div class="section" id="{{ t }}">
 
-    let saved = localStorage.getItem("selected_tab") || "準提金袋";
+        {% include 'partials/section_header.html' %}
 
-    // 找對應按鈕
-    let btns = document.querySelectorAll('.tabs button');
+        {% if t == "🔥 準提金袋" %}
 
-    btns.forEach(btn=>{
-        if(btn.innerText === saved){
-            btn.click();
+        <form method="POST" action="/open_all/pray_gold">
+
+            <button class="btn open" style="margin-bottom:15px;">
+                🔥 一鍵全開
+            </button>
+
+        </form>
+
+        {% elif t == "✨ 準提銀袋" %}
+
+        <form method="POST" action="/open_all/pray_silver">
+
+            <button class="btn open" style="margin-bottom:15px;">
+                ✨ 一鍵全開
+            </button>
+
+        </form>
+
+        {% elif t == "🥇 大金袋" %}
+
+        <form method="POST" action="/open_all/gold">
+
+            <button class="btn open" style="margin-bottom:15px;">
+                🥇 一鍵全開
+            </button>
+
+        </form>
+
+        {% elif t == "🥈 大銀袋" %}
+
+        <form method="POST" action="/open_all/silver">
+
+            <button class="btn open" style="margin-bottom:15px;">
+                🥈 一鍵全開
+            </button>
+
+        </form>
+
+        {% endif %}
+
+        <!-- 🔥 未開 -->
+        {% include 'partials/unopened_block.html' %}
+
+        <!-- ⏳ 等待開獎 -->
+
+        <div style="
+        margin-top:20px;
+        margin-bottom:10px;
+        color:#00eaff;
+        font-size:22px;
+        font-weight:bold;
+        ">
+            ⏳ 等待開獎
+        </div>
+
+        {% include 'partials/pending_block.html' %}
+
+        <!-- 🎯 已完成對獎 -->
+
+        <div style="
+    margin-top:30px;
+    margin-bottom:10px;
+    color:#FFD54F;
+    font-size:22px;
+    font-weight:bold;
+">
+            🎯 已完成對獎
+        </div>
+
+        {% include 'partials/settled_block.html' %}
+
+    </div>
+
+    {% endfor %}
+
+    <script>
+
+        function copyText(text) {
+
+            navigator.clipboard.writeText(text);
+
+            alert("已複製: " + text);
+
         }
-    });
-}
-</script>
+
+        function showTab(type, btn) {
+
+            // 記住選擇
+            localStorage.setItem("selected_tab", type);
+
+            // 全部隱藏
+            document.querySelectorAll('.section').forEach(el => {
+                el.style.display = 'none';
+            });
+
+            // 移除 active
+            document.querySelectorAll('.tabs button').forEach(b => {
+                b.classList.remove('active');
+            });
+
+            // 顯示目標
+            document.getElementById(type).style.display = 'block';
+
+            // 高亮按鈕
+            if (btn) {
+                btn.classList.add('active');
+            }
+        }
+
+        // 預設 tab
+        window.onload = function () {
+
+            let saved =
+                localStorage.getItem("selected_tab")
+                || "🔥 準提金袋";
+
+            let btns =
+                document.querySelectorAll('.tabs button');
+
+            btns.forEach(btn => {
+
+                if (btn.innerText.includes(saved)) {
+
+                    btn.click();
+
+                }
+
+            });
+
+        }
+
+        // 開袋 AJAX
+        document.querySelectorAll(".open-form").forEach(form => {
+
+            form.addEventListener("submit", async function (e) {
+
+                e.preventDefault();
+
+                const response = await fetch(form.action, {
+                    method: "POST"
+                });
+
+                if (response.ok) {
+
+                    localStorage.setItem("scroll_to_latest", "1");
+
+                    location.reload();
+
+                }
+
+            });
+
+        });
+
+    </script>
 
 </body>
+
 </html>

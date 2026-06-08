@@ -1,111 +1,440 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
-<meta charset="UTF-8">
-<title>AI推薦號碼</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幸運   小遊戲</title>
 
-<style>
-body{
-    background:#062b2f;
-    color:#fff;
-    text-align:center;
-    font-family: Arial;
-    margin:0;
-    padding-top:40px;   /* 🔥 往上移 */
-}
+    <style>
+        body {
+            background: #062b2f;
+            color: #fff;
+            text-align: center;
+            font-family: Arial;
+            margin: 0;
+            padding-top: 10px;
+            /* 🔥 往上移 */
+        }
 
-/* 卡片 */
-.card{
-    width:600px;
-    margin:30px auto;
-    padding:35px;
-    background:linear-gradient(180deg,#0b2f36,#041f22);
-    border-radius:25px;
-    box-shadow:0 0 30px rgba(0,255,255,0.15);
-}
+        /* 卡片 */
+        .card {
+            width: 580px;
+            margin: 15px auto;
+            padding: 6px;
+            background: linear-gradient(180deg, #0b2f36, #041f22);
+            border-radius: 25px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.15);
+        }
 
-/* 標題 */
-.title{
-    font-size:26px;
-    margin-bottom:15px;
-}
+        /* 標題 */
+        .title {
+            font-size: 25px;
+            margin-bottom: 0px;
+        }
 
-/* 號碼（主角） */
-.numbers{
-    font-size:44px;
-    color:#FFD700;
-    margin:20px 0 25px;
-    letter-spacing:3px;
-}
+        /* 號碼（主角） */
+        .numbers {
+            font-size: 45px;
+            color: #FFD700;
+            margin: 20px 0 25px;
+            letter-spacing: 3px;
+        }
 
-/* 按鈕區 */
-.btn-group{
-    margin-top:15px;
-}
+        .ball {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
 
-/* 按鈕 */
-.btn{
-    margin:8px;
-    padding:14px 26px;   /* 🔥 放大 */
-    border:none;
-    border-radius:12px;
-    font-size:16px;      /* 🔥 字變大 */
-    font-weight:bold;
-    cursor:pointer;
-    color:#fff;
-}
+            width: 48px;
+            height: 48px;
 
-/* 顏色 */
-.btn-green{ background:#28a745; }
-.btn-orange{ background:#ff9800; }
+            background: #00c6ff;
+            color: #000;
 
-/* 提示 */
-.notice{
-    margin-top:20px;
-    font-size:13px;
-    color:#aaa;   /* 🔥 變低調 */
-}
-</style>
+            margin: 6px;
+
+            border-radius: 50%;
+
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        /* 🔥 特別號（重點） */
+        .special {
+            width: 52px;
+            height: 52px;
+
+            background: linear-gradient(135deg, #ffd700, #ff9800);
+            color: #000;
+
+            font-size: 25px;
+            font-weight: bold;
+
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+
+            border: 2px solid #fff;
+        }
+
+        .btn-group {
+            margin-top: 15px;
+        }
+
+        /* 按鈕區 */
+
+        .btn {
+            padding: 14px 26px;
+            /* 🔥 放大 */
+            border: none;
+            border-radius: 12px;
+            font-size: 22px;
+            /* 🔥 字變大 */
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+            padding: 12px;
+            margin: 6px 0;
+        }
+
+        /* 顏色 */
+        .btn-green {
+            background: #28a745;
+        }
+
+        .btn-orange {
+            background: #ff9800;
+        }
+
+        /* 提示 */
+        .notice {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #aaa;
+            /* 🔥 變低調 */
+        }
+
+        .top-bar {
+
+            position: relative;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 8px;
+
+            flex-wrap: wrap;
+
+            padding-top: 28px;
+        }
+
+        .top-user {
+
+            color: #fff;
+
+            font-size: 16px;
+        }
+
+        .top-money {
+
+            background: #0b3d3d;
+
+            padding: 9px 18px;
+
+            border-radius: 12px;
+
+            color: gold;
+
+            font-size: 16px;
+
+            font-weight: bold;
+        }
+
+        .top-btn {
+
+            padding: 5px 20px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            color: #fff;
+
+            font-size: 18px;
+
+            font-weight: bold;
+        }
+
+        .floating-charity {
+
+            margin: 20px auto;
+            top: 160px;
+            right: 25px;
+
+            width: 580px;
+
+            padding: 15px;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(180deg, #082c3a, #041f29);
+
+            box-shadow:
+                0 0 20px rgba(0, 255, 255, 0.08);
+
+            z-index: 10;
+        }
+
+        .charity-title {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            color: #ffe600;
+
+            margin-bottom: 5px;
+        }
+
+        .charity-text {
+
+            line-height: 1.9;
+
+            font-size: 18px;
+
+            color: #fff;
+        }
+
+        .charity-footer {
+
+            margin-top: 10px;
+
+            color: #ffd600;
+
+            font-size: 18px;
+
+            font-weight: bold;
+        }
+
+        .logout-btn {
+
+            position: absolute;
+            right: 10px;
+            color: #ff5252;
+            font-size: 18px;
+            width: auto;
+            position: absolute;
+            top: 5px;
+            padding: 10;
+        }
+
+        .btn-group {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-top: 20px;
+        }
+
+        .full-btn-form {
+
+            width: 100%;
+        }
+
+        .btn-main {
+
+            width: 100%;
+
+            display: block;
+        }
+
+        .btn-home {
+
+            background: #6c757d;
+
+            padding: 8px 18px;
+
+            border-radius: 10px;
+
+            text-decoration: none;
+
+            color: #fff;
+
+            font-size: 16px;
+
+            font-weight: bold;
+        }
+
+        @media (max-width:768px) {
+
+            .card {
+                width: 92%;
+                margin: 20px auto;
+                padding: 18px;
+            }
+
+            .floating-charity {
+                position: static;
+                width: 92%;
+                margin: 20px auto;
+            }
+
+            .title {
+                font-size: 22px;
+            }
+
+            .ball {
+                width: 38px;
+                height: 38px;
+                font-size: 18px;
+            }
+
+            .special {
+                width: 44px;
+                height: 44px;
+                font-size: 18px;
+            }
+
+            .btn {
+                width: 100%;
+                font-size: 18px;
+                padding: 12px;
+                margin: 6px 0;
+            }
+
+            .floating-charity {
+                width: 92%;
+                margin: 20px auto;
+            }
+
+            .username {
+                display: none;
+            }
+
+            .top-bar {
+                position: relative;
+                justify-content: center;
+                padding-top: 20px;
+            }
+
+            .logout-btn {
+                position: absolute;
+                top: 0;
+                right: 10px;
+                font-size: 18px;
+            }
+
+
+
+        }
+    </style>
 </head>
 
 <body>
+    <div class="top-bar">
 
-<div class="card">
+        <div class="top-user">
+            👤 {{ session.user }}
+        </div>
 
-    <div class="title">
-        🤖 AI推薦號碼
-    </div>
+        <div class="top-money">
+            💰 NT$ {{ global_money }}
+        </div>
 
-    <div class="numbers">
-        {{ numbers }}
-    </div>
-
-    <div style="margin-top:15px; font-size:14px; color:#aaa; line-height:1.8;">
-    🤖 AI推薦說明：<br>
-    AI推薦為基礎分析模型（統計參數較少），提供參考號碼；<br>
-    進階分析可透過福袋系統提升命中機率<br><br>
-
-   👤 使用規則：<br>
-   會員可免費使用 AI推薦功能<br>
-   非會員每日可免費使用 1 次
-   </div>
-
-    <div class="btn-group">
-        <!-- ✅ 只留兩個重點 -->
-        <a href="/ai">
-            <button class="btn btn-green">重新產生</button>
+        <a href="/bag" class="top-btn deposit-btn">
+            ➕儲值
         </a>
 
-        <a href="/check">
-            <button class="btn btn-orange">去對獎</button>
+        <a href="/logout" class="top-btn logout-btn">
+            登出
         </a>
+
     </div>
 
-    <div class="notice">
-        本系統為AI模擬分析，僅供娛樂參考
-    </div>
 
-</div>
+    <div class="card">
+
+        <div class="title">
+            🎲 幸運小遊戲
+        </div>
+
+        {% if numbers %}
+        <div>
+            {% for n in numbers %}
+            <span class="ball">{{ "%02d"|format(n) }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if special %}
+        <div style="margin-top:8px;">
+            <span class="ball special">★ {{ "%02d"|format(special) }}</span>
+        </div>
+        {% endif %}
+
+        <div style="margin-top:8px; font-size:18px; color:#aaa; line-height:1.8;">
+            🤖 模擬說明：<br>
+            為歷史分析模型，提供參考號碼；<br>
+            進階分析可透過福袋系統多種分析模型統計<br>
+
+            👑 使用規則：<br>
+
+            會員每日 5 次，過後每次消耗 1 準提金<br>
+
+            一般訪客每日可免費體驗 1 次
+        </div>
+
+        <br>
+
+        <div style="
+        color:#00ffd5;
+        font-size:16px;
+        font-weight:bold;
+    ">
+            今日剩餘免費次數：
+            {{ remaining }}
+        </div>
+
+        <div class="btn-group">
+
+            <form action="/ai" method="POST" class="full-btn-form">
+
+                <button type="submit" class="btn btn-green btn-main">
+
+                    重新產生
+
+                </button>
+
+            </form>
+
+            <button class="btn btn-orange btn-main" onclick="location.href='/check'">
+
+                去對獎
+
+            </button>
+
+            <a href="/" class="btn btn-home">
+
+                🏠 回首頁
+
+            </a>
+
+        </div>
+
+        <div class="notice">
+            本系統為模擬分析，僅供娛樂參考
+        </div>
+
+    </div>    
 
 </body>
+
 </html>

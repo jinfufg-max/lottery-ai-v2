@@ -1,129 +1,280 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>會員註冊</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
+
+            margin: 0;
+            padding: 0px;
+
             background: #0b1f2a;
             color: white;
+
             font-family: Arial;
+
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+
+            min-height: 100vh;
         }
 
         .home-btn {
+
             position: absolute;
             top: 20px;
-            left: 30px;
+            left: 20px;
         }
 
         .home-btn a {
+
             color: #00c6ff;
             text-decoration: none;
             font-weight: bold;
         }
 
         .card {
+
+            width: 100%;
+            max-width: 420px;
+
             background: #132f3f;
-            padding: 40px;
-            border-radius: 15px;
-            width: 340px;
+
+            padding: 25px 15px;
+
+            border-radius: 16px;
+
             text-align: center;
         }
 
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 8px;
-            border: none;
-        }
+        h2 {
 
-        button {
-            width: 100%;
-            padding: 10px;
-            background: #ff9800;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
+            margin-top: 0;
+            margin-bottom: 5px;
         }
 
         .price {
+
             color: #00ffcc;
+
             font-weight: bold;
-            margin: 10px 0;
+
+            font-size: 18px;
+
+            line-height: 1.7;
+
+            margin-bottom: 5px;
         }
 
         .bonus {
+
             color: #ffd700;
+
             font-weight: bold;
-            margin: 10px 0;
+
+            font-size: 18px;
+
+            line-height: 1.7;
+
+            margin-bottom: 0px;
         }
 
         .small {
-            font-size: 13px;
-            opacity: 0.85;
-            line-height: 1.6;
+
+            font-size: 16px;
+
+            line-height: 1.8;
+
+            opacity: 0.9;
+
+            margin-bottom: 0px;
+        }
+
+        input {
+
+            width: 100%;
+
+            height: 48px;
+
+            padding: 0 14px;
+
+            border: none;
+            border-radius: 10px;
+
+            font-size: 16px;
+
+            margin-bottom: 15px;
+        }
+
+        .password-box {
+
+            display: flex;
+            gap: 10px;
+
+            margin-bottom: 14px;
+        }
+
+        .password-box input {
+
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        button {
+
+            width: 100%;
+
+            height: 48px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: #d97706;
+
+            color: white;
+
+            font-size: 18px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .show-btn {
+
+            width: 80px;
+
+            background: #111;
+
+            font-size: 16px;
+
+            flex-shrink: 0;
         }
 
         .back-login {
+
             display: inline-block;
-            margin-top: 18px;
+
+            margin-top: 15px;
+
             color: #00c6ff;
+
             text-decoration: none;
         }
     </style>
+
 </head>
+
 <body>
 
-<div class="home-btn">
-    <a href="/">← 回首頁</a>
-</div>
-
-<div class="card">
-    <h2>會員註冊（限時體驗方案）</h2>
-
-    <div class="price">限時體驗價：NT$100</div>
-
-    <div class="bonus">
-        🎁 註冊立即獲得<br>
-        準提金 150 點 + 大金袋 ×1 + 大銀袋 ×2
+    <div class="home-btn">
+        <a href="/">← 回首頁</a>
     </div>
 
-    <div class="small">
-        ✔ 準提金僅限站內使用<br>
-        ✔ 可使用準提金購買福袋<br>
-        ✔ AI推薦號分析<br>
-        ✔ 對獎紀錄與統計分析<br><br>
+    <div class="card">
 
-        🤖 AI推薦為基礎分析模型（統計參數較少），提供參考號碼<br>
-        進階分析可透過福袋系統，結合更多數據提升命中機會<br><br>
+        <h2>會員註冊（試運營期間）</h2>
 
-        👤 使用規則：<br>
-        會員免費使用<br>
-        非會員每日可免費使用 1 次<br><br>
+        <div class="price">
 
-        ※ 正式上線後將調整為 NT$199（含 200 準提金）
+            {% if is_free %}
+            🎁 註冊會員 NT$100
+            {% else %}
+            💰 限時體驗價：NT$ {{ register_price }}
+            {% endif %}
+
+        </div>
+
+        <div class="bonus">
+
+            🎁 註冊立即獲得<br>
+            準提金 {{ register_bonus }} 點<br>
+            ➕ 大金袋 × 2
+        </div>
+        <br>
+        <div class="small">
+
+            🌟 準提金：<br>
+            ✔ 可商城抵消費<br>
+            ✔ 會員享 🎲 幸運小遊戲<br>
+            ✔ 隨緣福袋<br>
+
+            👤 入會最佳時機：<br>          
+
+            ※正式運營入會費 NT$199<br>
+            獲 200 準提金 ➕ 大金袋 × 5 <br>
+
+
+        </div>
+
+        <form action="/create_member_order" method="POST">
+
+            <input type="text" name="username" placeholder="帳號" required>
+
+            <input type="text" name="name" placeholder="姓名" required>
+
+            <input type="text" name="phone" placeholder="電話" required>
+
+            <input type="text" name="address" placeholder="地址" required>
+
+            <input type="email" name="email" placeholder="EMAIL" required>
+
+            <div class="password-box">
+
+                <input type="password" id="password" name="password" placeholder="密碼" required>
+
+                <button type="button" class="show-btn" onclick="togglePassword()">
+                    顯示
+                </button>
+
+            </div>
+
+            <button type="submit">
+
+                {% if is_free %}
+                立即註冊（領福袋）
+                {% else %}
+                前往付款
+                {% endif %}
+
+            </button>
+
+        </form>
+
+        <a href="/login" class="back-login">
+            ← 返回登入
+        </a>
+
     </div>
 
-    <br>
+    <script>
 
-    <form action="/payment-preview" method="get">
-        <input type="text" name="username" placeholder="帳號" required>
-        <input type="password" name="password" placeholder="密碼" required>
+        function togglePassword() {
 
-        <button type="submit">前往付款</button>
-    </form>
+            const password =
+                document.getElementById("password");
 
-    <a href="/login" class="back-login">← 返回登入</a>
-</div>
+            if (password.type === "password") {
+
+                password.type = "text";
+
+            } else {
+
+                password.type = "password";
+            }
+        }
+
+    </script>
 
 </body>
+
 </html>

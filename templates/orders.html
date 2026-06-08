@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>訂單管理</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    @media (max-width:768px) {
+
+        table {
+
+            font-size: 12px;
+
+            width: 100%;
+
+            display: block;
+
+            overflow-x: auto;
+
+            white-space: nowrap;
+        }
+
+        th,
+        td {
+
+            padding: 6px;
+        }
+
+        button {
+
+            font-size: 12px;
+
+            padding: 5px 8px;
+        }
+
+    }
+</style>
+
+<body style="background:#0b1f2a;color:white;font-family:Arial;">
+
+    <h2>📦 訂單管理系統</h2>
+
+    <!-- 🔥 簡單統計 -->
+    <p style="color:#00e5ff;">
+        訂單數量：{{ orders|length }}
+    </p>
+
+    <table border="1" cellpadding="10" style="border-collapse:collapse;width:100%;">
+        <tr>
+            <th>ID</th>
+            <th>商品</th>
+            <th>數量</th>
+            <th>總金額</th>
+            <th>收件人</th>
+            <th>電話</th>
+            <th>地址</th>
+            <th>付款方式</th>
+            <th>狀態</th>
+            <th>時間</th>
+        </tr>
+
+        {% for o in orders %}
+        <tr>
+
+            <td>{{ o["id"] }}</td>
+            <td>
+
+                {% if o["order_type"] == "topup" %}
+                🟡 準提金儲值
+
+                {% elif o["order_type"] == "shop" %}
+                🔵 商城訂單
+
+                {% elif o["order_type"] == "register" %}
+                🟣 會員註冊
+
+                {% else %}
+                {{ o["product_name"] or "⚪ 一般訂單" }}
+
+                {% endif %}
+
+            </td>
+            <td>{{ o["qty"] }}</td>
+            <td>NT$ {{ o["total"] }}</td>
+            <td>{{ o["name"] }}</td>
+            <td>{{ o["phone"] }}</td>
+            <td>{{ o["address"] }}</td>
+            <td>
+
+            {% if o["payment_method"] == "credit" %}
+            💳 信用卡付款
+
+            {% elif o["payment_method"] == "cod" %}
+            🚚 貨到付款
+
+            {% elif o["payment_method"] == "points" %}
+            🟡 準提金付款
+
+            {% elif o["payment_method"] == "cash" %}
+            💵 現金付款
+
+            {% else %}
+            {{ o["payment_method"] }}
+
+            {% endif %}
+
+            </td>
+
+            <!-- 🔥 狀態核心（已優化） -->
+            <td>
+
+                {% set status = (o["status"] or "")|lower|trim %}
+
+                {% if status == "pending" %}
+                <span style="color:gold;font-weight:bold;">🟡 新訂單</span><br>
+
+                <form method="POST" action="/update_order/{{ o['id'] }}/paid" style="display:inline;">
+                    <button type="submit">付款完成</button>
+                </form>
+                <button style="
+                    margin-top:6px;
+                    background:#ff9800;
+                    border:none;
+                    padding:6px 10px;
+                    border-radius:6px;
+                    color:white;
+                    cursor:pointer;
+                ">
+                    💰 確認已收款
+                </button>
+                </a>
+
+                {% elif status == "paid" %}
+                <span style="color:lime;font-weight:bold;">🟢 已付款</span><br>
+
+                <form method="POST" action="/update_order/{{ o['id'] }}/shipped" style="display:inline;">
+                    <button type="submit">已出貨</button>
+                </form>
+                <button style="
+                    margin-top:6px;
+                    background:#03a9f4;
+                    border:none;
+                    padding:6px 10px;
+                    border-radius:6px;
+                    color:white;
+                    cursor:pointer;
+                ">
+                    📦 出貨
+                </button>
+                </a>
+
+                {% elif status == "shipped" %}
+                <span style="color:skyblue;font-weight:bold;">🔵 已出貨</span>
+
+                {% else %}
+                <span style="color:red;">⚠ 狀態錯誤（{{ status }}）</span>
+
+                {% endif %}
+
+            </td>
+
+            <td>{{ o["created_at"] or "" }}</td>
+
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br><br>
+
+    <a href="/shop">
+        <button style="
+        padding:10px 20px;
+        background:#00c3ff;
+        border:none;
+        border-radius:8px;
+        color:white;
+        font-size:16px;
+        cursor:pointer;
+    ">
+            ← 回商品頁
+        </button>
+    </a>
+
+</body>
+
+</html>

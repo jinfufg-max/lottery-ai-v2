@@ -1,0 +1,40 @@
+{% for b in bags if b.type == t and b.status == "settled" %}
+
+<div class="result-row">
+
+    <div>
+
+        <div class="numbers">
+            {{ b.numbers }}
+        </div>
+
+        <div class="hit">
+            🎯 命中 {{ b.hit_count }} 顆
+        </div>
+
+        <div class="time">
+            {{ (b.opened_at or b.created_at)[:19] }}
+            ｜ {{ b.type }}
+        </div>
+
+    </div>
+
+    <div style="display:flex; gap:10px;">
+
+        <button class="btn copy" onclick="copyText('{{ b.numbers }}')">
+            複製
+        </button>
+
+        <form method="POST" action="/delete_bag/{{ b.id }}" style="display:inline;" onsubmit="return confirm('確定刪除？')">
+
+            <button type="submit" class="btn delete">
+                刪除
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endfor %}

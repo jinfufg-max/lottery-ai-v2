@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product['name'] }}</title>
+
+    <style>
+        body {
+            background: #062b2f;
+            color: white;
+            font-family: Arial;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .left {
+            flex: 1;
+        }
+
+        .left img {
+            width: 100%;
+            max-width: 260px;
+
+            max-height: 320px;
+
+            object-fit: cover;
+
+            border-radius: 10px;
+
+            display: block;
+
+            margin: auto;
+        }
+
+        .right {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .price {
+            font-size: 24px;
+            color: #00eaff;
+            margin: 10px 0;
+        }
+
+        .vip-price {
+            font-size: 18px;
+            color: #00ffaa;
+        }
+
+        .save {
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+
+        .buy-btn {
+            width: 100%;
+            max-width: 320px;
+
+            padding: 18px;
+
+            background: linear-gradient(135deg, #ff7a00, #ff3c00);
+
+            border: none;
+
+            border-radius: 10px;
+
+            color: white;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .back {
+            margin-top: 20px;
+            display: inline-block;
+            color: #ccc;
+        }
+
+        .right p {
+            line-height: 1.8;
+            margin-top: 18px;
+            word-break: break-word;
+        }
+
+        @media (max-width:768px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .left img {
+                max-width: 100%;
+            }
+
+            .right {
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 28px;
+                margin-bottom: 20px;
+                line-height: 1.4;
+            }
+
+            .buy-btn {
+                max-width: 100%;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 🔥 回上一頁 -->
+    <a href="javascript:history.back()" class="back">← 回上一頁</a>
+
+    <h1>{{ product['name'] }}</h1>
+
+    <div class="container">
+
+        <div class="left">
+            <img src="{{ product['image1'] or '/static/default.jpg' }}">
+        </div>
+
+        <div class="right">
+
+            <p>{{ product['desc'] or '高能量加持商品' }}</p>
+
+            <!-- 原價 -->
+            <div class="price">NT$ {{ product['price'] }}</div>
+
+            <!-- 🔥 準提金價格 -->
+            <div class="vip-price">
+                💰 準提金 NT$ {{ (product['price'] * 0.95) | int }}
+            </div>
+
+            <!-- 🔥 節省 -->
+            <div class="save">
+                現省 NT$ {{ (product['price'] * 0.05) | int }}
+            </div>
+
+            <!-- 🔥 刺激轉換 -->
+            <div style="color:#ffcc00;margin-bottom:15px;line-height:1.8;">
+
+                💰 現金付款優惠<br>
+                滿3000 免運費 / 滿6000 享95折 ➕ 免運費<br><br>
+
+                💎 會員準提金付款<br>
+                滿3000 享95折 ➕ 免運費 / 滿1500 免運費
+
+            </div>
+
+            <form action="/add_to_cart/{{ product['id'] }}" method="post">
+
+        <div style="
+            text-align:center;
+            color:white;
+            font-size:18px;
+            font-weight:bold;
+            margin-top:20px;
+            margin-bottom:10px;
+        ">
+            購買數量
+        </div>
+
+        <div style="
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:15px;
+        ">
+
+            <button type="button"
+                onclick="minusQty()"
+                style="
+                width:45px;
+                height:45px;
+                border:none;
+                border-radius:10px;
+                background:#ff6b6b;
+                color:white;
+                font-size:24px;
+                font-weight:bold;
+                cursor:pointer;">
+                −
+            </button>
+
+            <input
+                type="hidden"
+                id="qty"
+                name="qty"
+                value="1">
+
+            <span id="qty_text"
+                style="
+                min-width:70px;
+                padding:10px 0;
+                border:2px solid #ccc;
+                border-radius:10px;
+                background:white;
+                color:black;
+                font-size:24px;
+                font-weight:bold;
+                text-align:center;
+                display:inline-block;">
+                1
+            </span>
+
+            <button type="button"
+                onclick="plusQty()"
+                style="
+                width:45px;
+                height:45px;
+                border:none;
+                border-radius:10px;
+                background:#2ecc71;
+                color:white;
+                font-size:24px;
+                font-weight:bold;
+                cursor:pointer;">
+                +
+            </button>
+
+        </div>
+
+        <div id="subtotal_box"
+            style="
+            margin-top:20px;
+            margin-bottom:20px;
+            text-align:center;
+        ">
+
+            <div style="
+                color:white;
+                font-size:16px;
+            ">
+                小計金額
+            </div>
+
+            <div style="
+                color:#ffcc00;
+                font-size:32px;
+                font-weight:bold;
+            ">
+                NT$
+                <span id="subtotal">
+                    {{ product['price'] }}
+                </span>
+            </div>
+
+        </div>
+
+        <button class="buy-btn">
+            🛒 加入購物車
+        </button>
+
+</form>
+
+<script>
+
+const price = {{ product['price'] }};
+const stock = {{ product['stock'] }};
+
+function plusQty() {
+
+    let qty = document.getElementById("qty");
+    let text = document.getElementById("qty_text");
+
+    let current = parseInt(qty.value);
+
+    // 單次最多25件
+    if (current >= 25) {
+        alert("單次最多購買 25 件");
+        return;
+    }
+
+    // 超賣最多到 -10
+    if ((stock - (current + 1)) < -10) {
+        alert("已超過預售上限");
+        return;
+    }
+
+    qty.value = current + 1;
+    text.innerText = qty.value;
+
+    updateSubtotal();
+}
+
+function minusQty() {
+
+    let qty = document.getElementById("qty");
+    let text = document.getElementById("qty_text");
+
+    if (parseInt(qty.value) > 1) {
+
+        qty.value = parseInt(qty.value) - 1;
+        text.innerText = qty.value;
+
+        updateSubtotal();
+    }
+}
+
+function updateSubtotal() {
+
+    let qty = parseInt(
+        document.getElementById("qty").value
+    );
+
+    document.getElementById("subtotal").innerText =
+        qty * price;
+}
+
+</script>
+
+            <!-- 備用回商店 -->
+            <br>
+            <a href="/shop" style="font-size:22px" class="back">← 回商店</a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

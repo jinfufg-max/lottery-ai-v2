@@ -1,173 +1,705 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
-<meta charset="UTF-8">
-<title>對獎系統</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>對獎系統</title>
 
-<style>
-body {
-    background: #0b1f2a;
-    color: white;
-    font-family: Arial;
-    text-align: center;
-}
-
-.container {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin-top: 50px;
-}
-
-.card {
-    background: #111;
-    padding: 30px;
-    border-radius: 15px;
-    width: 400px;
-}
-
-.title {
-    color: #ffd700;
-    font-size: 20px;
-    margin-bottom: 15px;
-}
-
-input {
-    width: 70%;
-    padding: 8px;
-    margin: 5px;
-    border-radius: 8px;
-    border: none;
-}
-
-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    background: #00c6ff;
-    color: white;
-    cursor: pointer;
-}
-
-.match {
-    color: #00ff99;
-    margin-left: 10px;
-}
-
-.error {
-    color: red;
-}
-</style>
-
-<script>
-// 🔔 音效
-function beep(){
-    new Audio("https://www.soundjay.com/button/beep-07.wav").play();
-}
-
-// 🎯 自動格式
-function formatInput(el){
-
-    let raw = el.value.replace(/[^0-9]/g, "");
-    let result = [];
-    let used = new Set();
-
-    for(let i=0; i<raw.length; i+=2){
-
-        let pair = raw.substring(i, i+2);
-
-        if(pair.length < 2){
-            result.push(pair);
-            continue;
+    <style>
+        body {
+            background: #071d29;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            margin: 0;
+            padding-bottom: 50px;
         }
 
-        let num = parseInt(pair);
-
-        if(num > 49){
-            beep();
-            continue;
+        h2 {
+            margin-top: 5px;
+            font-size: 32px;
+            color: #fff;
         }
 
-        if(used.has(num)){
-            beep();
-            continue;
+        /* 上方按鈕 */
+        .top-btn {
+            margin-top: 5px;
         }
 
-        used.add(num);
-        result.push(pair);
-    }
+        .home-btn {
+            display: inline-block;
 
-    if(result.length > 6){
-        beep();
-        result = result.slice(0,6);
-    }
+            background: linear-gradient(180deg, #19d2ff, #00aee6);
 
-    el.value = result.join(",");
-}
-</script>
+            color: white;
+            text-decoration: none;
+
+            padding: 10px 22px;
+
+            border-radius: 14px;
+
+            font-size: 20px;
+            font-weight: bold;
+
+            box-shadow:
+                0 0 20px rgba(0, 225, 255, 0.25);
+
+            transition: .2s;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 主區 */
+        .container {
+
+            width: 100%;
+
+            max-width: 480px;
+
+            margin: 0 auto;
+
+            padding: 12px;
+
+            box-sizing: border-box;
+        }
+
+        /* 左右功能柱 */
+        .side-panel {
+
+            width: 180px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 18px;
+        }
+
+        .side-btn {
+
+            display: block;
+
+            padding: 10px 18px;
+
+            border-radius: 15px;
+
+            text-decoration: none;
+
+            background: #42c5f5;
+            color: #111;
+
+            font-size: 20px;
+
+            font-weight: 900;
+
+            box-shadow:
+                0 0 25px rgba(255, 215, 0, .25),
+                0 6px 18px rgba(0, 0, 0, .35);
+
+            transition: .2s;
+        }
+
+        .side-btn:hover {
+
+            transform:
+                translateY(-3px) scale(1.03);
+
+            filter: brightness(1.05);
+        }
+
+        /* 卡片 */
+        .card {
+
+            width: 100%;
+
+            max-width: 420px;
+
+            box-sizing: border-box;
+
+            margin: 0 auto;
+        }
+
+        .title {
+
+            color: #ffe600;
+
+            font-size: 22px;
+
+            margin-bottom: 0px;
+
+            font-weight: bold;
+        }
+
+        /* 號碼球 */
+        .ball {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            width: 45px;
+
+            height: 45px;
+
+            background: #00cfff;
+
+            color: #000;
+
+            margin: 5px;
+
+            border-radius: 50%;
+
+            font-size: 20px;
+
+            font-weight: bold;
+        }
+
+        .special {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            width: 48px;
+
+            height: 48px;
+
+            background: #ffd600;
+
+            color: #000;
+
+            border-radius: 50%;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            margin-top: 0px;
+        }
+
+        /* 輸入 */
+        input {
+
+            width: 68%;
+
+            padding: 10px;
+
+            border-radius: 10px;
+
+            border: none;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            text-align: center;
+
+            letter-spacing: 2px;
+        }
+
+        /* 按鈕 */
+        .main-btn {
+
+            margin-top: 5px;
+
+            background:
+                linear-gradient(180deg,
+                    #16d4ff,
+                    #00b5e6);
+
+            border: none;
+
+            color: white;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            padding: 14px 32px;
+
+            border-radius: 14px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 0 20px rgba(0, 225, 255, .25);
+
+            transition: .2s;
+        }
+
+        .main-btn:hover {
+            transform: scale(1.03);
+        }
+
+        .match {
+            color: #00ff99;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+        }
+
+        /* AI區 */
+        .ai-empty {
+
+            color: #ccc;
+
+            margin-top: 10px;
+
+            line-height: 2;
+
+            font-size: 18px;
+        }
+
+        .ai-btn {
+
+            display: inline-block;
+
+            margin-top: 10px;
+
+            padding: 14px 30px;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(180deg,
+                    #ffae00,
+                    #ff8c00);
+
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            box-shadow:
+                0 0 18px rgba(255, 153, 0, .3);
+        }
+
+        .warn {
+
+            color: #ff4d4d;
+
+            margin-top: 10px;
+
+            font-size: 18px;
+
+            font-weight: bold;
+        }
+
+        /* 公益 */
+        .charity {
+
+            width: 420px;
+
+            padding: 20px;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(180deg,
+                    #082c3a,
+                    #041f29);
+
+            box-shadow:
+                0 0 20px rgba(0, 255, 255, 0.08);
+        }
+
+        .charity-title {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            color: #ffe600;
+
+            margin-bottom: 20px;
+        }
+
+        .charity-text {
+
+            line-height: 2;
+
+            font-size: 20px;
+        }
+
+        .charity-footer {
+
+            margin-top: 10px;
+
+            color: #ffd600;
+
+            font-size: 20px;
+
+            font-weight: bold;
+        }
+
+        .topup-green {
+            display: block;
+
+            padding: 10px 18px;
+
+            border-radius: 15px;
+
+            text-decoration: none;
+            background: #63e0b5;
+            color: #111;
+            font-size: 20px;
+
+            font-weight: 900;
+
+            box-shadow:
+                0 0 25px rgba(255, 215, 0, .25),
+                0 6px 18px rgba(0, 0, 0, .35);
+
+            transition: .2s;
+        }
+
+        .topup-gold {
+            display: block;
+
+            padding: 10px 18px;
+
+            border-radius: 15px;
+
+            text-decoration: none;
+            background: #b57cff;
+            color: #111;
+            font-size: 20px;
+
+            font-weight: 900;
+
+            box-shadow:
+                0 0 25px rgba(255, 215, 0, .25),
+                0 6px 18px rgba(0, 0, 0, .35);
+
+            transition: .2s;
+        }
+
+        .quick-grid{
+
+            margin-top:25px;
+
+            display:flex;
+
+            justify-content:center;
+
+            gap:15px;
+
+            flex-wrap:wrap;
+        }
+
+        .quick-card{
+
+            width:180px;
+
+            height:95px;
+
+            border-radius:15px;
+
+            text-decoration:none;
+
+            color:#111;
+
+            font-weight:bold;
+
+            display:flex;
+
+            flex-direction:column;
+
+            justify-content:center;
+
+            align-items:center;
+
+            transition:.2s;
+        }
+
+        .quick-card:hover{
+
+            transform:translateY(-3px);
+        }
+
+        .quick-card .icon{
+
+            font-size:26px;
+
+            margin-bottom:6px;
+        }
+
+        .orange{
+            background:#ffb300;
+        }
+
+        .blue{
+            background:#4fc3f7;
+        }
+
+        .green{
+            background:#6bd9b0;
+        }
+
+        .purple{
+            background:#b388ff;
+        }
+
+        @media (max-width:768px) {
+
+            .container {
+
+                flex-direction: column;
+
+                align-items: center;
+            }
+
+            .card,
+            .side-box,
+            .charity {
+
+                width: 100%;
+
+                max-width: 420px;
+            }
+
+            .quick-grid{
+
+                margin-top:25px;
+
+                display:flex;
+
+                justify-content:center;
+
+                gap:15px;
+
+                flex-wrap:wrap;
+            }
+
+            .quick-card{
+
+                width:180px;
+
+                height:95px;
+
+                border-radius:15px;
+
+                text-decoration:none;
+
+                color:#111;
+
+                font-weight:bold;
+
+                display:flex;
+
+                flex-direction:column;
+
+                justify-content:center;
+
+                align-items:center;
+
+                transition:.2s;
+            }
+
+            .quick-card:hover{
+
+                transform:translateY(-3px);
+            }
+
+            .quick-card .icon{
+
+                font-size:26px;
+
+                margin-bottom:6px;
+            }
+
+            .orange{
+                background:#ffb300;
+            }
+
+            .blue{
+                background:#4fc3f7;
+            }
+
+            .green{
+                background:#6bd9b0;
+            }
+
+            .purple{
+                background:#b388ff;
+            }
+
+        }
+    </style>
+
+    <script>
+
+        function beep() {
+            new Audio("https://www.soundjay.com/button/beep-07.wav").play();
+        }
+
+        function formatInput(el) {
+
+            let raw = el.value.replace(/[^0-9]/g, "");
+            let result = [];
+            let used = new Set();
+
+            for (let i = 0; i < raw.length; i += 2) {
+
+                let pair = raw.substring(i, i + 2);
+
+                if (pair.length < 2) {
+                    result.push(pair);
+                    continue;
+                }
+
+                let num = parseInt(pair);
+
+                if (num > 49) {
+                    beep();
+                    continue;
+                }
+
+                if (used.has(num)) {
+                    beep();
+                    continue;
+                }
+
+                used.add(num);
+                result.push(pair);
+            }
+
+            if (result.length > 6) {
+                beep();
+                result = result.slice(0, 6);
+            }
+
+            el.value = result.join(",");
+        }
+
+    </script>
 
 </head>
 
 <body>
 
-<h2>🎯 對獎系統</h2>
+    <h2>🎯 對獎系統</h2>
 
-<a href="/">
-    <button style="background:#ffd700;color:black;">🏠 回首頁</button>
-</a>
-
-<div class="container">
-
-    <!-- 左：AI -->
-    <div class="card">
-        <div class="title">🎁 AI預測命中參考（中3居多）</div>
-
-        {% if ai_data %}
-            {% for row in ai_data %}
-                <div>
-                    {{ row.numbers }} → {{ row.match }} 個
-                </div>
-            {% endfor %}
-        {% else %}
-            <div>沒有資料</div>
-        {% endif %}
+    <div class="top-btn">
+        <a href="/" class="home-btn">
+            🏠 回首頁
+        </a>
     </div>
 
-    <!-- 中：對獎 -->
-    <div class="card">
-        <div class="title">📊 本期號碼</div>
-        <div>{{ draw }}</div>
+    <div class="container">
 
-        <form method="POST">
+        <!-- 對獎 -->
+        <div class="card">
 
-            {% for i in range(5) %}
-                <div>
-                    第{{i+1}}組：
-                    <input 
-                        name="set{{i+1}}"
-                        value="{{ inputs[i] }}"
-                        onkeyup="formatInput(this)"
-                        placeholder="輸入號碼"
-                    >
+            <div class="title">
+                📊 本期號碼
+            </div>
+
+            <div style="
+            color:#aaa;
+            font-size:16px;
+            margin-bottom:15px;
+        ">
+                {{ period }}
+            </div>
+
+            <div style="margin-bottom:10px;">
+
+                {% for n in draw_numbers %}
+                <span class="ball">
+                    {{ "%02d"|format(n) }}
+                </span>
+                {% endfor %}
+
+            </div>
+
+            {% if special_number %}
+            <div>
+                <span class="special">
+                    ⭐ {{ special_number }}
+                </span>
+            </div>
+            {% endif %}
+
+            <form method="POST" style="margin-top:28px;">
+
+                {% for i in range(5) %}
+
+                <div style="margin-bottom:18px;">
+
+                    <div style="
+                    margin-bottom:6px;
+                    font-size:14px;
+                    color:#ccc;
+                ">
+                        第{{i+1}}組
+                    </div>
+
+                    <input name="set{{i+1}}" value="{{ inputs[i] }}" onkeyup="formatInput(this)" placeholder="輸入號碼">
 
                     {% if results %}
-                        {% if results[i] == "❌" %}
-                            <span class="error">格式錯誤</span>
-                        {% elif results[i] != "" %}
-                            <span class="match">👉 {{ results[i] }} 個</span>
-                        {% endif %}
+                    {% if results[i] == "❌" %}
+
+                    <div class="error">
+                        格式錯誤
+                    </div>
+
+                    {% elif results[i] != "" %}
+
+                    <div class="match">
+                        👉 {{ results[i] }} 個
+                    </div>
+
                     {% endif %}
+                    {% endif %}
+
                 </div>
-            {% endfor %}
 
-            <br>
-            <button type="submit">開始對獎</button>
+                {% endfor %}
 
-        </form>
+                <button type="submit" class="main-btn">
+                    開始對獎
+                </button>
 
-    </div>
+            </form>
+
+        </div>
+        
+            </div>
+
+            <div class="quick-grid">
+
+    <a href="/ai" class="quick-card orange">
+        <div class="icon">🎲</div>
+        <div>幸運小遊戲</div>
+    </a>
+
+    <a href="/bag" class="quick-card blue">
+        <div class="icon">🎁</div>
+        <div>幸運福袋</div>
+    </a>
+
+    <a href="/analysis" class="quick-card green">
+        <div class="icon">🎲</div>
+        <div>樂透抱抱</div>
+    </a>
+
+    <a href="/shop" class="quick-card purple">
+        <div class="icon">🛒</div>
+        <div>我家ㄟ柑仔店</div>
+    </a>
 
 </div>
-
-</body>
-</html>

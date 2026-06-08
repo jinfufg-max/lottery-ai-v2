@@ -1,60 +1,6 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<title>使用條款</title>
+{% extends "base.html" %}
 
-<style>
-body{
-    background:#062b2f;
-    color:#fff;
-    font-family:Arial;
-    padding:40px;
-    line-height:1.8;
-}
-h1{ color:#FFD700; }
-.section{ margin-bottom:25px; }
-a{ color:#00eaff; }
-</style>
-</head>
-
-<body>
-
-<h1>使用條款</h1>
-
-<div class="section">
-本平台提供樂透數據分析與AI模擬預測工具，僅供娛樂與研究用途，
-不涉及任何彩券銷售、投資建議或保證中獎之服務。
-</div>
-
-<div class="section">
-使用者應了解：
-<ul>
-<li>本系統所有號碼為統計分析結果</li>
-<li>不保證任何中獎結果</li>
-<li>不得將本平台視為投資工具</li>
-</ul>
-</div>
-
-<div class="section">
-會員服務說明：
-<ul>
-<li>付費項目為數據分析服務與功能使用權</li>
-<li>非購買中獎機率或任何金融商品</li>
-</ul>
-</div>
-
-<div class="section">
-風險聲明：
-使用者應自行承擔所有使用風險，本平台不對任何損失負責。
-</div>
-
-<div class="section">
-如不同意本條款，請停止使用本服務。
-</div>
-
-<br>
-<a href="/">回首頁</a>
-
-</body>
-</html>
+{% block content %}
+<h2>使用條款</h2>
+<p>本服務僅供娛樂用途，不保證中獎...</p>
+{% endblock %}

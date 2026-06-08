@@ -1,748 +1,597 @@
-from flask import Flask, render_template, request, redirect, session, Response
+from flask import Flask, render_template, request, redirect, session, flash, Response
+
+from services.db import get_shop_db, get_lottery_db
+from routes.bag import generate_numbers
+
+from routes.auth import auth_bp
+from routes.check import check_bp
+
+from services.init_db import *
+from services.init_all import init_all
+from services.ai_tools import *
+from ai.engine import (
+    get_lottery_data,
+    special_analysis_with_score,
+    generate_analysis_data,
+    get_ai_numbers,
+    AI_STATE,
+    HIT_CACHE,
+    update_ai_background,
+    refresh_ai_cache,
+)
+
 import sqlite3
-import pandas as pd
-
-def get_lottery_data():
-    df = pd.read_csv("大樂透.csv")
-
-    numbers = []
-
-    for _, row in df.iterrows():
-        nums = row[:6].tolist()  # 前6碼
-        numbers.append(nums)
-
-    return numbers
-import random
-from datetime import datetime
-
-from collections import Counter
-import pandas as pd
 import os
-
-def get_lottery_data():
-    main_numbers, _ = get_full_data()
-    return main_numbers
-def get_full_data():
-    path = r"C:\openclaw\agent_project\大樂透.csv"
-    df = pd.read_csv(path)
-
-    main_numbers = []
-    special_numbers = []
-
-    for _, row in df.iterrows():
-        try:
-            main = row.iloc[:6].astype(int).tolist()   # 前6碼
-            special = int(row.iloc[6])                # 第7碼
-
-            main_numbers.append(main)
-            special_numbers.append(special)
-        except:
-            continue
-
-    return main_numbers, special_numbers
-
-def special_analysis():
-
-    main_numbers, special_numbers = get_full_data()
-
-    mapping = {}
-
-    # 建立對應
-    for main, sp in zip(main_numbers, special_numbers):
-        if sp not in mapping:
-            mapping[sp] = []
-
-        mapping[sp].extend(main)
-
-    # 統計
-    result = {}
-
-    for sp, nums in mapping.items():
-        count = Counter(nums)
-
-        # 取前3名
-        top = count.most_common(3)
-
-        result[sp] = top
-
-    return result
-
-def special_analysis_with_score():
-
-    main_numbers, special_numbers = get_full_data()
-
-    flat = [n for row in main_numbers for n in row]
-    global_count = Counter(flat)
-
-    mapping = {}
-
-    for main, sp in zip(main_numbers, special_numbers):
-        if sp not in mapping:
-            mapping[sp] = []
-
-        mapping[sp].extend(main)
-
-    result = {}
-
-    for sp, nums in mapping.items():
-        count = Counter(nums)
-
-        top_list = []
-
-        for n, c in count.most_common(3):
-            base = global_count[n]
-
-            # 👉 偏差（關鍵）
-            ratio = round((c / base) * 100, 1)
-
-            top_list.append((n, ratio))
-
-        result[sp] = top_list
-
-    return result
-
-app = Flask(__name__)
-app.secret_key = "secret123"
-
-DB_PATH = "lottery_v2.db"
-
-
-# =========================
-# ✅ 功能區（放這裡🔥）
-# =========================
-
-def use_points(username, cost):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-
-    c.execute("SELECT points FROM users WHERE username=?", (username,))
-    user = c.fetchone()
-
-    if not user:
-        conn.close()
-        return False, "找不到使用者"
-
-    points = user[0] or 0
-
-    if points < cost:
-        conn.close()
-        return False, "準提金不足"
-
-    new_points = points - cost
-    c.execute("UPDATE users SET points=? WHERE username=?", (new_points, username))
-    conn.commit()
-    conn.close()
-
-    return True, new_points
-
-
-# ===== DB =====
-def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
-# ===== 首頁 =====
-from collections import Counter
-
-@app.route('/')
-def index():
-
-    data = get_lottery_data()
-    flat = [n for row in data for n in row]
-    count = Counter(flat)
-
-    # 補齊所有號碼
-    for i in range(1, 50):
-        if i not in count:
-            count[i] = 0
-
-    # 熱門
-    sorted_hot = sorted(count.items(), key=lambda x: (-x[1], x[0]))
-    hot = [n for n, _ in sorted_hot[:3]]
-
-    # 冷門
-    sorted_count = sorted(count.items(), key=lambda x: (x[1], x[0]))
-    cold = [n for n, _ in sorted_count[:3]]
-
-    hit_rate = 24
-    sample_count = len(data)
-
-    # 區間分析（🔥修正：放進 function 內）
-    ranges = {
-        "1-10": 0,
-        "11-20": 0,
-        "21-30": 0,
-        "31-40": 0,
-        "41-49": 0
-    }
-
-    for n in flat:
-        if 1 <= n <= 10:
-            ranges["1-10"] += 1
-        elif 11 <= n <= 20:
-            ranges["11-20"] += 1
-        elif 21 <= n <= 30:
-            ranges["21-30"] += 1
-        elif 31 <= n <= 40:
-            ranges["31-40"] += 1
-        else:
-            ranges["41-49"] += 1
-
-    total = sum(ranges.values())
-
-    if total == 0:
-        range_percent = {k: "0%" for k in ranges}
-    else:
-        percent_values = [v / total * 100 for v in ranges.values()]
-        rounded = [round(p, 1) for p in percent_values]
-        diff = round(100 - sum(rounded), 1)
-        rounded[-1] += diff
-        range_percent = dict(zip(ranges.keys(), [f"{r}%" for r in rounded]))
-
-    return render_template(
-        "index.html",
-        hot=hot,
-        cold=cold,
-        hit_rate=hit_rate,
-        sample_count=sample_count,
-        range_percent=range_percent
-    )    
-    # ===== AI推薦 =====
-from datetime import datetime
+import json
+import pandas as pd
 import random
-
-@app.route('/ai')
-def ai_page():
-    return render_template('ai.html')  # 👉 AI頁面
-
-    # =========================
-    # 👤 未登入（免費試用1次）
-    # =========================
-    if "user" not in session:
-
-        # 第一次使用
-        if not session.get("trial_used"):
-
-            session["trial_used"] = True
-
-            numbers = sorted(random.sample(range(1, 50), 6))
-
-            return render_template("ai.html",
-                                   numbers=numbers,
-                                   points="試用")
-
-        # 第二次 → 強制註冊
-        return redirect("/register")
-
-    # =========================
-    # 👤 已登入（正常扣點）
-    # =========================
-
-    username = session["user"]
-
-    # =========================
-    # 💰 扣準提金（10點）
-    # =========================
-    ok, result = use_points(username, 10)
-
-    if not ok:
-        return result   # 顯示「準提金不足」
-
-    # =========================
-    # 🤖 AI號碼（先簡單版）
-    # =========================
-    # 🤖 AI號碼（先簡單版）
-        numbers = sorted(random.sample(range(1, 50), 6))
-
-    # =========================
-    # 💰 查剩餘準提金
-    # =========================
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-
-    c.execute("SELECT points FROM users WHERE username=?", (username,))
-    row = c.fetchone()
-    points = row[0] if row else 0
-
-    conn.close()
-
-    # =========================
-    # 📤 傳給前端
-    # =========================
-    return render_template("ai.html",
-                           numbers=numbers,
-                           points=points)
-
-
-# =========================
-# 👤 會員系統
-# =========================
-
-def init_user_db():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
-        password TEXT,
-        points INTEGER DEFAULT 0
-    )
-    """)
-
-    conn.commit()
-    conn.close()
-
-init_user_db()
-
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-
-        # 👉 不存DB
-        session["temp_user"] = {
-            "username": username,
-            "password": password
-        }
-
-        return redirect("/create_order")
-
-    return render_template("register.html")
-
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-
-        conn = sqlite3.connect(DB_PATH)
-        c = conn.cursor()
-
-        c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password))
-        user = c.fetchone()
-
-        conn.close()
-
-        if user:
-            session["user"] = username   # 🔥 核心
-                                        
-            return redirect("/")
-        else:
-            return "登入失敗"
-
-    return render_template("login.html")
-
-
-@app.route("/payment-preview")
-def payment_preview():
-    return redirect("/member")
-
-@app.route("/member")
-def member():
-    return render_template("member.html")
-
-
-@app.route("/payment-success", methods=["POST"])
-def payment_success():
-    return "unused"
-
-@app.route("/logout")
-def logout():
-    session.pop("user", None)
-    return redirect("/")
 
 import hashlib
-import urllib.parse
+from urllib.parse import quote_plus
+from services.mail_service import send_welcome_email
 
-ECPAY_MERCHANT_ID = "3495663"
-ECPAY_HASH_KEY = "OqodLmQBAMrhzvUO"
-ECPAY_HASH_IV = "iSdTq4wYga4phFG8"
+from collections import Counter
+from datetime import datetime, timedelta
 
-ECPAY_URL = "https://payment.ecpay.com.tw/Cashier/AioCheckOut/V5"
+from routes.bag import bag_bp, settle_lottery
+from routes.shop import shop_bp
+from routes.payment import payment_bp
+from routes.analysis import analysis_bp
+from routes.admin import admin_bp
+from routes.page import page_bp
+
+# =========================
+# 綠界設定
+# =========================
+
+from config import (
+    ECPAY_MERCHANT_ID,
+    ECPAY_HASH_KEY,
+    ECPAY_HASH_IV,
+    EMAIL_ACCOUNT,
+    EMAIL_PASSWORD,
+)
+
+ECPAY_API_URL = "https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5"
+
+
+# =========================
+# 綠界 CheckMacValue
+# =========================
 
 
 def generate_check_mac_value(params):
+
     sorted_params = sorted(params.items())
-    encoded = urllib.parse.urlencode(sorted_params)
 
-    raw = f"HashKey={ECPAY_HASH_KEY}&{encoded}&HashIV={ECPAY_HASH_IV}"
-    raw = urllib.parse.quote_plus(raw).lower()
+    raw = f"HashKey={ECPAY_HASH_KEY}"
 
-    return hashlib.sha256(raw.encode()).hexdigest().upper()
+    for key, value in sorted_params:
+        raw += f"&{key}={value}"
 
+    raw += f"&HashIV={ECPAY_HASH_IV}"
 
-from flask import redirect, session
+    raw = quote_plus(raw).lower()
 
-@app.route("/analysis")
-def analysis():
-
-    user = "test"
-
-    data = special_analysis_with_score()
-
-    if not data:
-        return "資料載入失敗"
-
-    sample_sp = list(data.keys())[0]
-    result = data[sample_sp]
-
-    # 補熱門冷門
-    main_data = get_lottery_data()
-    flat = [n for row in main_data for n in row]
-    count = Counter(flat)
-
-    sorted_hot = sorted(count.items(), key=lambda x: (-x[1], x[0]))
-    hot = [n for n, _ in sorted_hot[:3]]
-
-    sorted_count = sorted(count.items(), key=lambda x: (x[1], x[0]))
-    cold = [n for n, _ in sorted_count[:3]]
-
-    hit_rate = 24
-    sample_count = len(main_data)
-
-    return render_template(
-        "analysis.html",
-        user=user,
-        sp=sample_sp,
-        result=result,
-        hot=hot,
-        cold=cold,
-        hit_rate=hit_rate,
-        sample_count=sample_count
-    )
-    
-@app.route("/create_order")
-def create_order():
-
-    trade_no = "ORDER" + datetime.now().strftime("%Y%m%d%H%M%S")
-
-    params = {
-        "MerchantID": ECPAY_MERCHANT_ID,
-        "MerchantTradeNo": trade_no,
-        "MerchantTradeDate": datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
-        "PaymentType": "aio",
-        "TotalAmount": 100,
-        "TradeDesc": "會員開通",
-        "ItemName": "會員服務",
-        "ReturnURL": "https://lottery-ai-app.onrender.com/return",
-        "ChoosePayment": "ALL",
-        "EncryptType": 1,
+    replace_map = {
+        "%21": "!",
+        "%28": "(",
+        "%29": ")",
+        "%2a": "*",
+        "%2d": "-",
+        "%2e": ".",
+        "%5f": "_",
     }
 
-    params["CheckMacValue"] = generate_check_mac_value(params)
+    for k, v in replace_map.items():
+        raw = raw.replace(k, v)
 
-    html = f'<form id="pay" method="post" action="{ECPAY_URL}">'
-    for k, v in params.items():
-        html += f'<input type="hidden" name="{k}" value="{v}">'
-    html += '</form><script>document.getElementById("pay").submit();</script>'
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest().upper()
 
-    return html
 
-@app.route("/return", methods=["POST"])
-def ecpay_return():
+import logging
 
-    data = request.form.to_dict()
-    print("綠界回傳:", data)
+import config
 
-    # ✅ 付款成功
-    if data.get("RtnCode") == "1":
+app = Flask(__name__)
 
-        temp_user = session.get("temp_user")
+logging.basicConfig(filename="error.log", level=logging.ERROR)
 
-        if not temp_user:
-            return "no temp user"
+init_all()
 
-        username = temp_user["username"]
-        password = temp_user["password"]
+app.permanent_session_lifetime = timedelta(hours=1)
 
-        conn = sqlite3.connect(DB_PATH)
+app.register_blueprint(shop_bp)
+app.register_blueprint(payment_bp)
+app.register_blueprint(bag_bp)
+app.register_blueprint(auth_bp)
+app.register_blueprint(check_bp)
+app.register_blueprint(analysis_bp)
+app.register_blueprint(admin_bp)
+app.register_blueprint(page_bp)
+
+
+@app.context_processor
+def inject_user():
+    user_id = session.get("user_id")
+    balance = 0
+
+    if user_id:
+        conn = None
+        try:
+            conn = get_shop_db()
+            c = conn.cursor()
+
+            c.execute("SELECT points FROM users WHERE id=?", (user_id,))
+            row = c.fetchone()
+
+            if row:
+                balance = row[0]
+
+        except Exception as e:
+            print("inject_user error:", e)
+
+        finally:
+            if conn:
+                conn.close()
+
+    return dict(global_money=balance)
+
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+
+
+# ===== 註冊設定（核心）=====
+IS_REGISTER_FREE = True  # 🔥 現在免費（測試用）
+REGISTER_PRICE = 100  # 未來價格
+REGISTER_BONUS = 150  # 註冊送點
+app.secret_key = "xup6g/4q/6bp4vul4rm0 xup6504d93xup65p 2u4xup6u.4w/6"
+ALLOW_CUSTOM_TOPUP = True  # 🔥 測試用開關
+
+# ===== 首頁 =====
+
+
+@app.route("/")
+def index():
+
+    conn = get_shop_db()
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+
+    # ===== 熱銷商品 =====
+
+    hot_products = c.execute("""
+        SELECT *
+        FROM products
+        WHERE status=1
+        LIMIT 4
+    """).fetchall()
+
+    # ===== 本週時間 =====
+    start = datetime.now() - timedelta(days=7)
+
+    end = datetime.now()
+
+    # ===== 本週開袋總數 =====
+    c.execute(
+        """
+        SELECT COUNT(*)
+        FROM user_bags
+        WHERE status='settled'
+        AND date(settled_at) BETWEEN ? AND ?
+    """,
+        (
+            start.strftime("%Y-%m-%d"),
+            end.strftime("%Y-%m-%d"),
+        ),
+    )
+
+    row = c.fetchone()
+
+    weekly_opened = row[0] if row else 0
+
+    # ===== 歷史最高 =====
+    c.execute("""
+        SELECT MAX(hit_count)
+        FROM user_bags
+        WHERE status='settled'
+    """)
+
+    best_row = c.fetchone()
+
+    history_best = best_row[0] if best_row and best_row[0] else 0
+
+    # ===== 本週資料 =====
+    c.execute(
+        """
+        SELECT hit_count
+        FROM user_bags
+        WHERE status='settled'
+        AND date(settled_at) BETWEEN ? AND ?
+    """,
+        (
+            start.strftime("%Y-%m-%d"),
+            end.strftime("%Y-%m-%d"),
+        ),
+    )
+
+    rows = c.fetchall()
+
+    # ===== 補0 =====
+    dist = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+
+    for r in rows:
+        hit = r["hit_count"]
+        if hit in dist:
+            dist[hit] += 1
+
+    # ===== 命中統計 =====
+    hit3 = dist.get(3, 0)
+
+    hit4 = dist.get(4, 0)
+
+    hit5 = max([k for k, v in dist.items() if v > 0], default=0)
+
+    # ===== 本週總數 =====
+    total = sum(dist.values())
+
+    conn.close()
+
+    # ===== 原本資料 =====
+    now = datetime.now()
+    today = now.strftime("%Y/%m/%d")
+    current_time = now.strftime("%H:%M")
+
+    conn2 = get_lottery_db()
+    c2 = conn2.cursor()
+
+    c2.execute("SELECT COUNT(*) FROM lottery_results")
+    total_periods = c2.fetchone()[0]
+
+    conn2.close()
+
+    total_runs = total_periods * 50
+
+    # ===== AI首頁資料 =====
+    analysis_data = AI_STATE.get("analysis_data", {})
+
+    ai_data = {
+        "hot": " / ".join(f"{n:02d}" for n in analysis_data.get("hot", [])),
+        "cold": " / ".join(f"{n:02d}" for n in analysis_data.get("cold", [])),
+        "hit_rate": analysis_data.get("hit_rate", "計算中"),
+    }
+
+    main_data = get_lottery_data()
+
+    flat = [n for row in main_data for n in row]
+
+    count = Counter(flat)
+
+    if not count:
+        return None
+
+    sorted_hot = sorted(count.items(), key=lambda x: (-x[1], x[0]))
+
+    top5_total = sum(v for _, v in sorted_hot[:5])
+
+    all_total = sum(count.values())
+
+    hot_score = round((top5_total / all_total) * 100, 1)
+
+    # ===== 回傳 =====
+    return render_template(
+        "index.html",
+        # ===== 基本 =====
+        total_runs=total_runs,
+        total_periods=total_periods,
+        today=today,
+        current_time=current_time,
+        # ===== 開獎速報 =====
+        weekly_opened=weekly_opened,
+        hit5=hit5,
+        total=total,
+        hit3=hit3,
+        hit4=hit4,
+
+        hot_products=hot_products,
+        history_best=history_best,
+        tracking_periods=total_periods,
+        # ===== AI分析 =====
+        hot_score=hot_score,
+        hot=ai_data["hot"],
+        cold=ai_data["cold"],
+        hit_rate=ai_data["hit_rate"],
+    )
+
+
+# =========================
+# 🔥 讀取 AI 快取
+# =========================
+@app.route("/ai", methods=["GET", "POST"])
+def ai_page():
+
+    # =========================
+    # 🔷 GET：只顯示舊結果
+    # =========================
+    if request.method == "GET":
+
+        return render_template(
+            "ai.html",
+            numbers=session.get("ai_numbers"),
+            special=session.get("ai_special"),
+            remaining=session.get("ai_remaining"),
+            is_member=session.get("ai_is_member"),
+            error=session.get("ai_error"),
+        )
+
+    # =========================
+    # 🔷 身分判斷
+    # =========================
+    if "user" in session:
+        identifier = session["user"]
+        is_member = True
+
+    else:
+        identifier = request.remote_addr
+        is_member = False
+
+    remaining = None
+
+    # =========================
+    # 🔷 使用限制
+    # =========================
+
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    can_use = can_use_ai(identifier)
+
+    # ===== 非會員 =====
+    if not is_member:
+
+        remaining = 1 if can_use else 0
+
+        if not can_use:
+
+            session["ai_error"] = "今日已使用AI推薦"
+            session["ai_numbers"] = None
+            session["ai_special"] = None
+            session["ai_remaining"] = remaining
+            session["ai_is_member"] = False
+
+            return redirect("/ai")
+
+    # ===== 會員 =====
+    else:
+        user_id = session.get("user_id")
+
+        conn = get_shop_db()
         c = conn.cursor()
 
-        # 🔥 防重複
-        c.execute("SELECT * FROM users WHERE username=?", (username,))
-        user = c.fetchone()
+        # 今日使用次數
+        c.execute(
+            """
+            SELECT COUNT(*)
+            FROM ai_usage
+            WHERE identifier=?
+            AND date(created_at)=?
+        """,
+            (identifier, today),
+        )
 
-        if user is None:
+        used_count = c.fetchone()[0]
+
+        free_left = max(0, 5 - used_count)
+
+        remaining = free_left
+
+        # ===== 超過5次 =====
+        if used_count >= 6:
+
+            # 查點數
+            c.execute("SELECT points FROM users WHERE id=?", (user_id,))
+
+            row = c.fetchone()
+
+            points = row[0] if row else 0
+
+            # 點數不足
+            if points < 1:
+
+                conn.close()
+
+                session["ai_error"] = "準提金不足"
+                session["ai_numbers"] = None
+                session["ai_special"] = None
+                session["ai_remaining"] = 0
+                session["ai_is_member"] = True
+
+                return redirect("/ai")
+
+            # 扣1點
             c.execute(
-                "INSERT INTO users (username, password, points) VALUES (?, ?, ?)",
-                (username, password, 150)
+                """
+                UPDATE users
+                SET points = points - 1
+                WHERE id=?
+            """,
+                (user_id,),
             )
+
             conn.commit()
 
         conn.close()
 
-        # 🔥 登入
-        session["user"] = username
-        # 🎁 送福袋
-        session["bags"] = ["大金袋", "大銀袋", "大銀袋"]
+    # =========================
+    # 🔷 AI產號
+    # =========================
+    history = get_lottery_data()
 
-        # 🔥 清掉暫存
-        session.pop("temp_user", None)
+    main_numbers = get_ai_numbers(history)
 
-        return "1|OK"
+    special = random.choice([n for n in range(1, 50) if n not in main_numbers])
 
-    return "fail"
+    # =========================
+    # 🔷 紀錄使用
+    # =========================
+    record_ai_use(identifier)
 
-# =========================
-# 🎁 福袋購買頁
-# =========================
-@app.route("/bag")
-def bag_page():
+    # =========================
+    # 🔷 存進 session
+    # =========================
+    session["ai_numbers"] = main_numbers
+    session["ai_special"] = special
+    session["ai_remaining"] = remaining
+    session["ai_is_member"] = is_member
+    session["ai_error"] = None
 
-    if "money" not in session:
-        session["money"] = 500
+    # =========================
+    # 🔷 超重要：PRG
+    # =========================
+    return redirect("/ai")
 
-    if "bags" not in session:
-        session["bags"] = []
+    UPLOAD_FOLDER = "static/uploads"
 
-    return render_template(
-        "bag.html",
-        money=session["money"],
-        bags=session["bags"]
-    )
 
+@app.route("/register_after_pay", methods=["GET", "POST"])
+def register_after_pay():
 
-# =========================
-# 🟩 我的福袋頁（修正版）
-# =========================
-@app.route("/mybag")
-def mybag():
+    print("===== register_after_pay =====")
 
-    if "bags" not in session:
-        session["bags"] = []
+    order_no = request.args.get("order_no")
 
-    today = datetime.now().strftime("%Y-%m-%d")
-    period = f"{today}（最新一期）"
+    conn = get_shop_db()
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
 
-    parsed_bags = []
+    c.execute("SELECT * FROM orders WHERE order_no=?", (order_no,))
 
-    # 🔥 修正：加入 index
-    for i, b in enumerate(session["bags"]):
+    order = c.fetchone()
 
-        if "已開" in b:
-            parts = b.split("_")
+    if not order:
+        return "訂單不存在"
 
-            parsed_bags.append({
-                "type": parts[1],
-                "numbers": parts[2],
-                "index": i
-            })
-
-        else:
-            parsed_bags.append({
-                "type": b,
-                "numbers": None,
-                "index": i
-            })
-
-    # 排序（保留你的邏輯）
-    order_map = {
-        "準提金袋": 1,
-        "大金袋": 2,
-        "大銀袋": 3,
-        "準提銀袋": 4
-    }
-
-    parsed_bags.sort(key=lambda x: order_map.get(x["type"], 99))
-
-    return render_template(
-        "mybag.html",
-        bags=parsed_bags,
-        today=today,
-        period=period
-    )
-
-
-# =========================
-# 🛒 購買福袋
-# =========================
-@app.route("/buy/<bag_type>")
-def buy(bag_type):
-
-    price_map = {
-        "silver": 50,
-        "gold": 100,
-        "pray_silver": 200,
-        "pray_gold": 1000,
-    }
-
-    bag_map = {
-        "silver": ["大銀袋"]*4 + ["大金袋"],
-        "gold": ["大銀袋"]*3 + ["大金袋"] + ["準提銀袋"],
-        "pray_silver": ["準提銀袋"]*3 + ["大金袋"] + ["大銀袋"],
-        "pray_gold": ["準提金袋"]*5
-    }
-
-    if "money" not in session:
-        session["money"] = 500
-
-    if "bags" not in session:
-        session["bags"] = []
-
-    if bag_type not in price_map:
-        return "錯誤類型"
-
-    if session["money"] < price_map[bag_type]:
-        return "金額不足"
-
-    session["money"] -= price_map[bag_type]
-    session["bags"] += bag_map[bag_type]
-
-    return redirect("/bag")
-
-
-# =========================
-# 🎁 開袋
-# =========================
-@app.route("/open/<int:i>")
-def open_bag(i):
-
-    if "bags" not in session:
-        return redirect("/mybag")
-
-    bags = session["bags"]
-
-    if i >= len(bags):
-        return redirect("/mybag")
-
-    if "已開" in bags[i]:
-        return redirect("/mybag")
-
-    nums = sorted(random.sample(range(1, 50), 6))
-
-    bags[i] = f"已開_{bags[i]}_{','.join(map(str, nums))}"
-
-    session["bags"] = bags
-
-    return redirect("/mybag")
-
-
-# =========================
-# 📥 下載全部
-# =========================
-@app.route("/download_all")
-def download_all():
-
-    if "bags" not in session:
-        return "沒有資料"
-
-    today = datetime.now().strftime("%Y-%m-%d")
-    period = f"{today}（最新一期）"
-
-    lines = []
-    lines.append(f"期數：{period}")
-    lines.append(f"開獎日：{today}")
-    lines.append("")
-
-    for b in session["bags"]:
-        if "已開" in b:
-            parts = b.split("_")
-            lines.append(f"{parts[1]}：{parts[2]}")
-
-    content = "\n".join(lines)
-
-    return Response(
-        content,
-        mimetype="text/plain",
-        headers={
-            "Content-Disposition": f"attachment;filename=lottery_{today}.txt"
-        }
-    )
-
-
-# =========================
-# 💰 儲值
-# =========================
-@app.route("/topup/<int:amount>")
-def topup(amount):
-
-    if "money" not in session:
-        session["money"] = 0
-
-    session["money"] += amount
-
-    return redirect("/bag")
-
-
-@app.route("/topup/custom", methods=["POST"])
-def topup_custom():
-
-    amount = request.form.get("amount")
-
-    if not amount:
-        return redirect("/bag")
-
-    amount = int(amount)
-
-    if amount <= 0:
-        return redirect("/bag")
-
-    if "money" not in session:
-        session["money"] = 0
-
-    session["money"] += amount
-
-    return redirect("/bag")
-
-
-# =========================
-# 🎯 對獎
-# =========================
-@app.route("/check", methods=["GET", "POST"])
-def check():
-
-    draw_numbers = [3, 8, 15, 21, 29, 37]
-    period = "2026-04-03 第001期"
-
-    inputs = ["", "", "", "", ""]
-    results = ["", "", "", "", ""]
+    if order["status"] != "paid":
+        conn.close()
+        return "訂單尚未付款"
 
     if request.method == "POST":
 
-        for i in range(5):
-            raw = request.form.get(f"set{i+1}", "").strip()
-            inputs[i] = raw
+        username = request.form.get("username")
+        password = request.form.get("password")
+        email = request.form.get("email")
+        phone = request.form.get("phone")
+        address = request.form.get("address")
 
-            if not raw:
-                continue
+        from werkzeug.security import generate_password_hash
 
-            try:
-                nums = [int(x) for x in raw.split(",") if x]
+        password_hash = generate_password_hash(password)
 
-                if len(nums) != 6:
-                    results[i] = "❌"
-                    continue
+        # 防重複帳號
+        c.execute("SELECT id FROM users WHERE username=?", (username,))
 
-                if len(set(nums)) != 6:
-                    results[i] = "❌"
-                    continue
+        exist = c.fetchone()
 
-                if any(n < 1 or n > 49 for n in nums):
-                    results[i] = "❌"
-                    continue
+        if exist:
+            return "帳號已存在"
 
-                match = len(set(nums) & set(draw_numbers))
-                results[i] = match
+        # 建立會員
+        c.execute(
+            """
+            INSERT INTO users (
+                username,
+                password,
+                name,
+                email,
+                phone,
+                address,
+                points
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (username, password_hash, order["name"], email, phone, address, 150),
+        )
 
-            except:
-                results[i] = "❌"
+        user_id = c.lastrowid
 
-    return render_template(
-        "check.html",
-        period=period,
-        draw=draw_numbers,
-        results=results,
-        inputs=inputs
-    )
+        print("開始送福袋")
+        print(user_id)
+
+        # 送大金袋 x2
+
+        try:
+            send_welcome_email(
+                email=email,
+                username=username,
+                points=150,
+            )
+        except Exception as e:
+            print("歡迎信失敗:", e)
+
+
+
+        for _ in range(2):
+
+            print("送出第", _)
+
+            c.execute(
+                """
+                INSERT INTO user_bags
+                (
+                    user_id,
+                    bag_type,
+                    numbers,
+                    is_opened,
+                    created_at,
+                    hit_count,
+                    status
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    user_id,
+                    "gold",
+                    "",
+                    0,
+                    (datetime.utcnow() + timedelta(hours=8)).strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    ),
+                    0,
+                    "pending",
+                ),
+            )
+
+        c.execute(
+            """
+            UPDATE orders
+            SET is_registered=1
+            WHERE id=?
+            AND is_registered=0
+            """,
+            (order["id"],),
+        )
+
+        if c.rowcount == 0:
+            conn.close()
+            return redirect("/login")
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/login")
+
+    return render_template("register_after_pay.html", order_no=order_no)
 
 
 # ===== 啟動 =====
 if __name__ == "__main__":
-    app.run(debug=True)
+
+    # 先建立 AI_STATE
+    refresh_ai_cache()
+
+    # 啟動AI生命週期
+    # update_ai_background()
+
+    # 啟動 Flask
+    app.run(debug=False)

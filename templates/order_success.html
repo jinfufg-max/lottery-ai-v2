@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>訂單完成</title>
+
+<style>
+body{
+    background:#062b2f;
+    color:white;
+    text-align:center;
+    font-family: Arial;
+    margin:0;
+    padding:0;
+}
+
+.box{
+    width:360px;
+    margin:80px auto;
+    background:#0c3b40;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(0,0,0,0.4);
+}
+
+h2{
+    color:#00e676;
+}
+
+.info{
+    margin-top:20px;
+    text-align:left;
+    line-height:1.8;
+}
+
+.btn{
+    margin-top:25px;
+    padding:12px;
+    width:100%;
+    background:#00c3ff;
+    border:none;
+    border-radius:8px;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.btn:hover{
+    background:#00a8dd;
+}
+</style>
+
+</head>
+<body>
+
+<div class="box">
+
+    <h2>✅ 訂單完成</h2>
+
+    <div class="info">
+
+        訂單編號：{{ order_no }}
+
+        <br><br>
+
+        {% if payment == "cash" %}
+            付款方式：🔥 現金付款（快速出貨）
+        {% elif payment == "points" %}
+            付款方式：💎 準提金付款
+        {% elif payment == "credit" %}
+            付款方式：💳 信用卡付款
+        {% endif %}
+
+        <br><br>
+
+        總金額：
+        <span style="color:#ffd54f;font-size:22px;">
+            NT$ {{ total }}
+        </span>
+
+        <br><br>
+
+        收件人：{{ name }}
+
+    </div>
+
+    <a href="/shop">
+        <button class="btn">回商品頁繼續購買</button>
+    </a>
+
+</div>

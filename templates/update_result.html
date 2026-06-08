@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>手動更新開獎</title>
+
+<style>
+body{
+    background:#062b2f;
+    color:#fff;
+    text-align:center;
+    font-family: Arial;
+}
+
+/* 🔥 上方資訊區 */
+.header{
+    background:#083c40;
+    padding:10px;
+    border-radius:10px;
+    width:320px;
+    margin:10px auto;
+}
+
+.title{
+    font-size:32px;
+    font-weight:bold;
+    margin-bottom:18px;
+}
+
+.date-box{
+    font-size:24px;
+    margin-bottom:12px;
+}
+
+.date-box input{
+    font-size:22px;
+    padding:8px 14px;
+    border-radius:6px;
+}
+
+.count{
+    font-size:30px;
+    font-weight:bold;
+    color:#00e5ff;
+    margin-top:12px;
+}
+
+/* 🔵 球 */
+.ball{
+    display:inline-block;
+    width:50px;
+    height:50px;
+    line-height:50px;
+    border-radius:40%;
+    margin:6px;
+    background:#123b5c;
+    cursor:pointer;
+    transition:0.2s;
+    font-size:24px;
+}
+
+.ball.active{
+    background:#ff9800;
+    transform:scale(1.15);
+}
+
+/* 分區 */
+.section{
+    margin:20px 0;
+}
+
+/* 按鈕 */
+button{
+    margin-top:30px;
+    padding:14px 40px;
+    border:none;
+    border-radius:8px;
+    background:#00c3ff;
+    color:white;
+    font-size:22px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<form method="POST" action="/admin/update_result" onsubmit="return beforeSubmit()">
+
+    <div class="header">
+
+        <div class="title">🎯 手動更新開獎</div>
+
+        <div class="date-box">
+            日期：
+            <input type="date" name="date" required>
+        </div>
+
+        <div class="count">
+            已選：<span id="count">0</span> / 6
+        </div>
+
+    </div>
+
+    <!-- 主號 -->
+    <div id="main"></div>
+
+    <br>
+    ⭐ 特別號
+    <div id="special_area"></div>
+
+    <!-- 🔥 關鍵隱藏欄位 -->
+    <input type="hidden" name="numbers" id="numbers">
+    <input type="hidden" name="special" id="special">
+
+    <br>
+    <button type="submit">送出</button>
+
+</form>
+
+<script>
+let selected = [];
+let selected_special = null;
+
+/* 主號 */
+function toggle(n, el){
+
+    if(selected.includes(n)){
+        selected = selected.filter(x => x !== n);
+        el.classList.remove("active");
+    }else{
+        if(selected.length >= 6){
+            alert("最多6個");
+            return;
+        }
+        selected.push(n);
+        el.classList.add("active");
+    }
+
+    document.getElementById("count").innerText = selected.length;
+}
+
+/* 特別號 */
+function pickSpecial(n, el){
+
+    selected_special = n;
+
+    document.querySelectorAll(".sp").forEach(b=>{
+        b.classList.remove("active");
+    });
+
+    el.classList.add("active");
+}
+
+/* 送出前 */
+function beforeSubmit(){
+
+    document.getElementById("numbers").value = selected.join(",");
+    document.getElementById("special").value = selected_special || "";
+
+    console.log("numbers:", selected);
+    console.log("special:", selected_special);
+
+    if(selected.length !== 6){
+        alert("請選6個號碼");
+        return false;
+    }
+
+    if(!selected_special){
+        alert("請選特別號");
+        return false;
+    }
+
+    return true;
+}
+
+/* 生成主號（分區） */
+let main = document.getElementById("main");
+
+function createRow(start, end){
+    let div = document.createElement("div");
+    div.className = "section";
+
+    for(let i=start;i<=end;i++){
+        let b = document.createElement("div");
+        b.className = "ball";
+        b.innerText = i;
+        b.onclick = function(){ toggle(i,b); };
+        div.appendChild(b);
+    }
+
+    main.appendChild(div);
+}
+
+createRow(1,10);
+createRow(11,20);
+createRow(21,30);
+createRow(31,40);
+createRow(41,49);
+
+/* 特別號 */
+let sp = document.getElementById("special_area");
+
+for(let i=1;i<=49;i++){
+    let b = document.createElement("div");
+    b.className = "ball sp";
+    b.innerText = i;
+    b.onclick = function(){ pickSpecial(i,b); };
+    sp.appendChild(b);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI平台</title>
+
+    <!-- 🔥 這行就是關鍵 -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body class="main-body">
+    <!-- 🔝 Navbar -->
+    <div class="topbar">
+
+        <div class="logo-title">
+            🎯 錦蚨豐ㄟ柑仔店
+        </div>
+
+        <div class="topbar-right">
+
+            {% if session.get("user") %}
+
+            <div class="user-name">
+                👤 {{ session.get("user") }}
+            </div>
+
+            <div class="money-box">
+                💰 NT$ {{ global_money }}
+            </div>
+
+            <a href="/shop">
+                🛍️ 商城
+            </a>
+
+            <a href="/cart">
+                🛒 我的購物車
+            </a>
+
+            <a href="/bag" class="topup-btn">
+                ➕ 儲值
+            </a>
+            
+            <a href="/logout" onclick="localStorage.removeItem('agreeBox')" class="logout-btn">
+                登出
+            </a>
+
+            {% else %}
+
+            <a href="/login">
+                登入
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- 🔥 核心插槽 -->
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+
+    </div>
+
+    <!--
+✅ 條款同意系統（穩定版）
+功能：
+1. 未勾選時攔截首頁功能入口
+2. confirm後自動勾選
+3. 操作期間保持
+4. 登出後清除
+⚠️ 已測試成功，勿隨意修改
+-->
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const box = document.getElementById("agreeBox");
+
+            // ===== 恢復狀態 =====
+            if (box && sessionStorage.getItem("agreeBox") === "yes") {
+                box.checked = true;
+            }
+
+            // ===== 手動勾選 =====
+            if (box) {
+
+                box.addEventListener("change", function () {
+
+                    if (box.checked) {
+                        sessionStorage.setItem("agreeBox", "yes");
+                    } else {
+                        sessionStorage.removeItem("agreeBox");
+                    }
+
+                });
+
+            }
+
+            // ===== 全域攔截 =====
+            document.addEventListener("click", function (e) {
+
+                const btn = e.target.closest(".need-agree");
+
+                if (!btn) return;
+
+                // 已同意
+                if (box && box.checked) return;
+
+                e.preventDefault();
+
+                const ok = confirm("請先閱讀並同意條款");
+
+                if (ok) {
+
+                    // 自動勾選
+                    if (box) {
+                        box.checked = true;
+                    }
+
+                    // 保存
+                    sessionStorage.setItem("agreeBox", "yes");
+
+                    // 自動進入
+                    // 防止 href 炸成 /undefined
+                    if (btn && btn.href) {
+                        window.location.href = btn.href;
+                    } else {
+                        console.warn("btn 或 href 不存在");
+                    }
+
+                }
+
+            });
+
+        });
+    </script>
+
+    <a href="https://lin.ee/ww0c8Hr" target="_blank" class="line-float-wrap">
+        <span class="line-float-text">
+            客服中心
+        </span>
+
+        <div class="line-float-btn">
+            ☎
+        </div>
+    </a>
+
+
+</body>
+
+</html>

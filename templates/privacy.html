@@ -1,59 +1,6 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<title>隱私權政策</title>
+{% extends "base.html" %}
 
-<style>
-body{
-    background:#062b2f;
-    color:#fff;
-    font-family:Arial;
-    padding:40px;
-    line-height:1.8;
-}
-h1{ color:#FFD700; }
-.section{ margin-bottom:25px; }
-a{ color:#00eaff; }
-</style>
-</head>
-
-<body>
-
-<h1>隱私權政策</h1>
-
-<div class="section">
-本平台重視您的隱私，所有資料僅用於系統運作與服務優化。
-</div>
-
-<div class="section">
-我們可能收集以下資訊：
-<ul>
-<li>帳號資訊（如登入資料）</li>
-<li>使用行為（如操作紀錄）</li>
-</ul>
-</div>
-
-<div class="section">
-資料用途：
-<ul>
-<li>提供個人化服務</li>
-<li>改善系統功能</li>
-<li>維護系統安全</li>
-</ul>
-</div>
-
-<div class="section">
-本平台不會販售、出租或外洩您的個人資料，
-除非依法配合相關單位要求。
-</div>
-
-<div class="section">
-使用本服務即表示您同意本隱私政策。
-</div>
-
-<br>
-<a href="/">回首頁</a>
-
-</body>
-</html>
+{% block content %}
+<h2>隱私政策</h2>
+<p>本網站不會洩露您的個人資料...</p>
+{% endblock %}

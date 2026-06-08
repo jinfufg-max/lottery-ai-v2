@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-TW" translate="no">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHOP</title>
+
+    <style>
+        body {
+            background: #062b2f;
+            color: #fff;
+            font-family: Arial;
+            margin: 0;
+
+            overflow-x: hidden;
+        }
+
+        /* 頂部 */
+        .shop-header {
+            text-align: center;
+
+            padding: 15px 15px 5px;
+        }
+
+        .shop-title {
+            color: #ff3c3c;
+
+            font-size: 36px;
+
+            margin-bottom: 5px;
+        }
+
+        .shop-sub {
+            color: #ccc;
+
+            font-size: 16px;
+        }
+
+        /* 上方按鈕 */
+        .top-actions {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+
+            margin: 0px 0 15px;
+        }
+
+        .top-btn {
+            font-size: 18px;
+            font-weight: bold;
+
+            padding: 12px 20px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: rgba(255, 255, 255, 0.08);
+
+            color: white;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .top-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .bag-entry {
+            background: linear-gradient(135deg, #FFD700, #ff9800);
+
+            color: #000;
+
+            padding: 12px 22px;
+
+            border-radius: 10px;
+
+            font-weight: bold;
+
+            text-decoration: none;
+
+            box-shadow: 0 4px 20px rgba(255, 200, 0, 0.4);
+
+            transition: 0.2s;
+        }
+
+        .bag-entry:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 提示 */
+        .flash-message {
+            background: #ffefc1;
+            color: #7a5200;
+
+            padding: 12px;
+
+            margin: 10px;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+        }
+
+        /* 區塊標題 */
+        .section-title {
+            margin: 10px 0;
+
+            padding-left: 40px;
+
+            font-size: 28px;
+        }
+
+        /* 商品區 */
+        .products {
+            display: grid;
+
+            grid-template-columns: repeat(4, 1fr);
+
+            gap: 15px;
+
+            padding: 15px 20px;
+
+            box-sizing: border-box;
+        }
+
+        /* 卡片 */
+        .card {
+            background: #12343b;
+
+            border-radius: 16px;
+
+            padding: 18px;
+
+            text-align: center;
+
+            transition: 0.25s;
+
+            cursor: pointer;
+
+            min-height: 340px;
+
+            box-sizing: border-box;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 主圖 */
+        .main-img {
+            width: 100%;
+
+            height: 140px;
+
+            object-fit: contain;
+
+            background: #0b2c2f;
+
+            border-radius: 10px;
+        }
+
+        /* 小圖 */
+        .thumbs {
+            margin-top: 8px;
+        }
+
+        .thumbs img {
+            width: 32px;
+            height: 32px;
+
+            opacity: 0.7;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .thumbs img:hover {
+            opacity: 1;
+        }
+
+        /* 名稱 */
+        .name {
+            margin-top: 10px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            line-height: 1.4;
+
+            min-height: 44px;
+        }
+
+        /* 描述 */
+        .desc {
+            display: block;
+
+            font-size: 12px;
+
+            line-height: 1.4;
+
+            min-height: 50px;
+
+            color: #6fe3ff;
+
+            overflow: hidden;
+
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        /* 價格 */
+        .price {
+            font-size: 20px;
+
+            color: #00eaff;
+
+            margin-top: 10px;
+
+            font-weight: bold;
+        }
+
+        .stock{
+            margin-top:8px;
+            font-size:14px;
+            color:#ffd54f;
+            font-weight:bold;
+        }
+
+        .point-bar {
+            width: fit-content;
+
+            margin: 20px auto;
+
+            display: flex;
+            align-items: center;
+            gap: 20px;
+
+            padding: 14px 24px;
+
+            border-radius: 16px;
+
+            background: #082f35;
+
+            border: 1px solid #00ffd5;
+
+            color: #00ffd5;
+
+            font-size: 22px;
+            font-weight: bold;
+
+            box-shadow: 0 0 15px rgba(0, 255, 213, 0.2);
+        }
+
+        .deposit-btn {
+            background: #00c853;
+
+            color: white;
+
+            padding: 10px 18px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            transition: 0.2s;
+        }
+
+        .deposit-btn:hover {
+            transform: translateY(-2px);
+
+            background: #00e676;
+        }
+
+        .btn-cart{
+            display:inline-block;
+            padding:12px 24px;
+            margin-left:10px;
+            border-radius:10px;
+            background:#00c853;
+            color:#fff;
+            text-decoration:none;
+            font-weight:bold;
+            box-shadow:0 0 15px rgba(0,200,83,.5);
+        }
+
+        .btn-cart:hover{
+            background:#00e676;
+        }
+
+        /* =========================
+   MOBILE
+========================= */
+
+        @media (max-width:768px) {
+
+            .shop-title {
+                font-size: 28px;
+            }
+
+            .shop-sub {
+                font-size: 14px;
+            }
+
+            .top-actions {
+                padding: 0 10px;
+            }
+
+            .top-btn {
+                width: 100%;
+            }
+
+            .bag-entry {
+                width: 100%;
+
+                box-sizing: border-box;
+
+                text-align: center;
+            }
+
+            .products {
+                grid-template-columns: 1fr 1fr;
+
+                gap: 10px;
+
+                padding: 10px;
+            }
+
+            .card {
+                min-height: 340px;
+
+                padding: 12px;
+
+                border-radius: 12px;
+            }
+
+            .main-img {
+                height: 110px;
+            }
+
+            .thumbs img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .name {
+                font-size: 13px;
+
+                min-height: 38px;
+            }
+
+            .desc {
+                display: none;
+            }
+
+            .price {
+                font-size: 16px;
+            }
+
+            .section-title {
+                padding-left: 15px;
+
+                font-size: 22px;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="flash-message">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="shop-header">
+
+        <div class="shop-title">
+            🔥 準提加持商店 🔥
+        </div>
+
+        <div class="shop-sub">
+            每日開運精選｜提升財運與能量
+        </div>
+
+        {% if session.get("user_id") %}
+
+        <div class="point-bar">
+
+            <div>
+                💎 我的準提金：
+                <span>{{ user_points }}</span>
+            </div>
+
+            <a href="/bag" class="deposit-btn">
+                ➕ 儲值準提金
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <div class="top-actions">
+
+        <button onclick="location.href='/'" class="top-btn">
+            ← 回首頁
+        </button>
+
+        <a href="/bag" class="bag-entry">
+            🎁 直接去抽福袋（AI推薦）
+        </a>
+        <a href="/cart" class="btn-cart">
+        🛒 我的購物車
+        </a>
+
+    </div>
+
+    <!-- 食品區 -->
+    <h2 class="section-title">🔥 食品區</h2>
+
+    <div class="products">
+        {% for p in food %}
+        <div class="card" onclick="location.href='/product/{{ p['id'] }}'" style="cursor:pointer;">
+
+            <img class="main-img" src="{{ p['image1'] or '/static/default.jpg' }}">
+
+            <div class="thumbs">
+                {% if p['image1'] %}
+                <img src="{{ p['image1'] }}" onclick="switchImg(this, event)">
+                {% endif %}
+                {% if p['image2'] %}
+                <img src="{{ p['image2'] }}" onclick="switchImg(this, event)">
+                {% endif %}
+            </div>
+
+            <div class="name">{{ p['name'] }}</div>
+
+            <div class="desc">
+                {% set d = p['desc'] or '' %}
+                {{ d if d else '✨ 提升財運｜穩定能量場' }}
+            </div>
+
+            <div class="price">NT$ {{ p['price'] }}</div>
+
+            {% if p['stock'] <= -10 %}
+            <div class="stock" style="color:#ff4d4d;">
+                🚫 暫停販售
+            </div>
+
+            {% elif p['stock'] <= 5 %}
+            <div class="stock" style="color:#ff9800;">
+                ⚠ 庫存不足（{{ p['stock'] }}）
+            </div>
+
+            {% else %}
+            <div class="stock">
+                庫存：{{ p['stock'] }}
+            </div>
+            {% endif %}
+            
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 飾品區 -->
+    <h2 class="section-title">✨ 飾品區</h2>
+    <div class="products">
+        {% for p in accessory %}
+        <div class="card" onclick="location.href='/product/{{ p['id'] }}'" style="cursor:pointer;">
+
+            <img class="main-img" src="{{ p['image1'] or '/static/default.jpg' }}">
+
+            <div class="thumbs">
+                {% if p['image1'] %}
+                <img src="{{ p['image1'] }}" onclick="event.stopPropagation(); switchImg(this)">
+                {% endif %}
+                {% if p['image2'] %}
+                <img src="{{ p['image2'] }}" onclick="event.stopPropagation(); switchImg(this)">
+                {% endif %}
+            </div>
+
+            <div class="name">{{ p['name'] }}</div>
+
+            <div class="desc">
+                {% set d = p['desc'] or '' %}
+                {{ d if d else '✨ 提升財運｜穩定能量場' }}
+            </div>
+
+            <div class="price">NT$ {{ p['price'] }}</div>
+
+            {% if p['stock'] <= -10 %}
+            <div class="stock" style="color:#ff4d4d;">
+                🚫 暫停販售
+            </div>
+
+            {% elif p['stock'] <= 5 %}
+            <div class="stock" style="color:#ff9800;">
+                ⚠ 庫存不足（{{ p['stock'] }}）
+            </div>
+
+            {% else %}
+            <div class="stock">
+                庫存：{{ p['stock'] }}
+            </div>
+            {% endif %}
+            
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 祭祀區 -->
+    <h2 class="section-title">🪔 祭祀區</h2>
+    <div class="products">
+        {% for p in ritual %}
+        <div class="card" onclick="location.href='/product/{{ p['id'] }}'" style="cursor:pointer;">
+
+            <img class="main-img" src="{{ p['image1'] or '/static/default.jpg' }}">
+
+            <div class="thumbs">
+                {% if p['image1'] %}
+                <img src="{{ p['image1'] }}" onclick="event.stopPropagation(); switchImg(this)">
+                {% endif %}
+                {% if p['image2'] %}
+                <img src="{{ p['image2'] }}" onclick="event.stopPropagation(); switchImg(this)">
+                {% endif %}
+            </div>
+
+            <div class="name">{{ p['name'] }}</div>
+
+            <div class="desc">
+                {% set d = p['desc'] or '' %}
+                {{ d if d else '✨ 提升財運｜穩定能量場' }}
+            </div>
+
+            <div class="price">NT$ {{ p['price'] }}</div>
+
+            {% if p['stock'] <= -10 %}
+            <div class="stock" style="color:#ff4d4d;">
+                🚫 暫停販售
+            </div>
+
+            {% elif p['stock'] <= 5 %}
+            <div class="stock" style="color:#ff9800;">
+                ⚠ 庫存不足（{{ p['stock'] }}）
+            </div>
+
+            {% else %}
+            <div class="stock">
+                庫存：{{ p['stock'] }}
+            </div>
+            {% endif %}
+            
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if session.get("user") %}
+
+    <script>
+
+        let idleTime = 0;
+
+        // 每分鐘檢查
+        setInterval(timerIncrement, 60000);
+
+        // 偵測行為
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
+        document.onclick = resetTimer;
+        document.onscroll = resetTimer;
+
+        function timerIncrement() {
+
+            idleTime++;
+
+            // 🔔 19分鐘提醒
+            if (idleTime === 19) {
+                alert("即將自動登出，請操作保持登入");
+            }
+
+            // 🔥 20分鐘強制登出
+            if (idleTime >= 20) {
+
+                alert("閒置過久，已自動登出");
+
+                window.location.href = "/logout";
+            }
+        }
+
+        function resetTimer() {
+            idleTime = 0;
+        }
+
+    </script>
+
+    {% endif %}
+
+    <script>
+
+        function switchImg(el, event) {
+
+            event.stopPropagation();
+
+            let card = el.closest(".card");
+
+            let mainImg = card.querySelector(".main-img");
+
+            let temp = mainImg.src;
+
+            mainImg.src = el.src;
+
+            el.src = temp;
+        }
+
+    </script>
+
+</body>
+
+</html>

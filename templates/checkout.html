@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>結帳</title>
+
+    <style>
+        body {
+            background: #062b2f;
+            color: #fff;
+            font-family: Arial;
+            text-align: center;
+        }
+
+        .box {
+
+            width: 92%;
+            max-width: 420px;
+
+            margin: 5px auto;
+
+            background: #0d3c40;
+
+            padding: 8px;
+
+            border-radius: 14px;
+
+            box-sizing: border-box;
+
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+        }
+
+        input {
+
+            width: 100%;
+
+            padding: 12px;
+
+            margin: 8px 0;
+
+            border: none;
+
+            border-radius: 8px;
+
+            box-sizing: border-box;
+        }        
+
+        .cash-btn {
+            background: #1ebbd7;
+            color: #fff;
+        }
+
+        .point-btn {
+            background: #ffa500;
+            color: #fff;
+        }
+
+        .summary {
+            margin-top: 10px;
+            line-height: 1.8;
+        }
+
+        .highlight {
+            color: #ffd700;
+        }
+
+        .payment-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .payment-buttons button {
+            flex: 1;
+        }
+
+        .cash-btn,
+        .point-btn {
+            width: 100%;
+            padding: 16px 0;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cash-btn {
+            background: #1ebbd7;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .point-btn {
+            background: #ffa500;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+
+        <a href="/shop" style="font-size:22px;color:#ccc;">← 回商品頁</a>
+
+        <h2>🧾 結帳</h2>
+
+        <div>商品：{{ product['name'] }}</div>
+
+        <!-- ✅ 只保留一個會員區塊 -->
+        {% if is_member %}
+        <div style="
+    margin-top:px;
+    padding:10px;
+    background:#083f44;
+    border-radius:10px;
+    color:#6eff8f;
+    font-size:16px;
+">
+            💰 我的準提金：NT$ {{ user_balance }}
+        </div>
+        {% endif %}       
+
+        <!-- 數量 -->
+        <div style="
+margin:0px 0;
+display:flex;
+justify-content:center;
+align-items:center;
+gap:15px;
+">
+
+    <button type="button"
+            onclick="changeQty(-1)"
+            style="
+            width:50px;
+            height:50px;
+            border:none;
+            border-radius:12px;
+            background:#ff6b6b;
+            color:#fff;
+            font-size:32px;
+            font-weight:bold;
+            cursor:pointer;">
+        −
+    </button>
+
+    <input id="qty"
+           value="1"
+           readonly
+           style="
+           width:100px;
+           height:55px;
+           text-align:center;
+           font-size:24px;
+           font-weight:bold;
+           border:none;
+           border-radius:12px;">
+
+    <button type="button"
+            onclick="changeQty(1)"
+            style="
+            width:50px;
+            height:50px;
+            border:none;
+            border-radius:12px;
+            background:#2ecc71;
+            color:#fff;
+            font-size:32px;
+            font-weight:bold;
+            cursor:pointer;">
+        +
+    </button>
+
+</div>
+
+        <!-- 金額 -->
+        <div class="summary">
+
+            商品金額：NT$ <span id="subtotal"></span><br>
+            運費：NT$ <span id="shipping"></span><br>
+
+            <hr>
+
+            總金額：<span class="highlight">NT$ <span id="total"></span></span><br>
+
+            <!-- 💎 準提金區塊 -->
+            <div style="margin-top:10px;color:#00eaff;">
+                💎 準提金商品價：NT$ <span id="point_price"></span><br>
+                💎 準提金運費：NT$ <span id="point_shipping"></span><br>
+                👉 準提金總付款：NT$ <span id="point_total"></span>
+                {% if is_member %}
+                <div id="point_warning" style="margin-top:8px;"></div>
+                {% endif %}
+            </div>
+
+            <div style="color:#ffcc00;">
+                現省 NT$ <span id="point_saved"></span>
+            </div>
+
+        </div>
+
+        <hr>
+
+        <form method="POST" action="/create_order">
+
+            <input type="hidden" name="token" value="{{ token }}">
+
+            <input type="hidden" name="id" value="{{ product['id'] }}">
+            <input type="hidden" name="qty" id="qty_hidden" value="1">
+
+            <input name="name" placeholder="收件人姓名" required>
+            <input name="phone" placeholder="電話" required>
+            <input name="address" placeholder="收貨地址" required>
+
+            <input type="email" name="email" placeholder="E-MAIL" required>
+
+            <!-- 現金 -->
+            <button class="cash-btn" name="payment_type" value="cash">
+                🔥 現金付款（快速出貨）
+            </button>
+
+            <!-- 準提金 -->
+            {% if is_member %}
+
+            <button id="pointBtn" class="point-btn" name="payment_type" value="points">
+                💎 準提金付款： （滿3000 享95折）
+            </button>
+
+            {% else %}
+
+            <button type="button" onclick="location.href='/login?next={{ request.path }}'" class="point-btn">
+                💎 準提金付款（會員專屬）
+            </button>
+
+            <div style="color:#ffcc00;line-height:1.8;">
+                💎 準提金付款：95折 + 滿1500免運<br>
+                💰 現金付款：滿3000 免運費 / 滿6000 再享95折 ➕ 免運費
+            </div>
+
+            {% endif %}
+
+        </form>
+
+    </div>
+
+    <script>
+        let price = {{ product['price'] }};
+        let qty = 1;
+        let userBalance = {{ user_balance if is_member else 0 }};
+
+        function changeQty(n) {
+            qty += n;
+
+            if (qty < 1) qty = 1;
+            if (qty > 25) qty = 25;
+
+            document.getElementById("qty").value = qty;
+            document.getElementById("qty_hidden").value = qty;
+
+            updateTotal();
+        }
+
+        function updateTotal() {
+
+            let subtotal = price * qty;
+
+            // 運費
+            let shipping = 100;
+
+            // 💰 現金付款
+            if (subtotal >= 3000) {
+                shipping = 0;
+            }
+
+            let total = subtotal + shipping;
+
+            // 💰 滿6000再95折
+            if (subtotal >= 6000) {
+                total = Math.floor(total * 0.95);
+            }
+
+            // =========================
+            // 💎 準提金付款
+            // =========================
+
+            let point_shipping = 100;
+
+            // 滿1500免運
+            if (subtotal >= 1500) {
+                point_shipping = 0;
+            }
+
+            let point_price = Math.floor(subtotal * 0.95);
+
+            let point_total = point_price + point_shipping;
+
+            let discount_saved = subtotal - point_price;
+
+            // 👉 更新畫面
+            document.getElementById("subtotal").innerText = subtotal;
+            document.getElementById("shipping").innerText = shipping;
+            document.getElementById("total").innerText = total;
+
+            document.getElementById("point_price").innerText = point_price;
+            document.getElementById("point_shipping").innerText = point_shipping;
+            document.getElementById("point_total").innerText = point_total;
+            document.getElementById("point_saved").innerText = discount_saved;
+
+            // =========================
+            // 🔥 核心：餘額判斷（一定要在這）
+            // =========================
+            let btn = document.getElementById("pointBtn");
+            let warning = document.getElementById("point_warning");
+
+            if (btn && warning) {
+
+                if (userBalance < point_total) {
+
+                    let diff = point_total - userBalance;
+
+                    btn.disabled = true;
+                    btn.style.opacity = 0.5;
+                    btn.innerText = "❌ 準提金不足";
+
+                    warning.innerHTML =
+                        "⚠️ 還差 NT$ " + diff +
+                        " 👉  <a href='/bag' style='color:#ffd700;'> ➕ 立即補點</a>";
+
+                } else {
+
+                    btn.disabled = false;
+                    btn.style.opacity = 1;
+                    btn.innerText = "💎 準提金付款（95折）";
+
+                    warning.innerHTML =
+                        "<span style='color:#00ff9c;'>✔ 可使用準提金付款</span>";
+                }
+            }
+        }
+
+        updateTotal();
+
+    </script>
+
+</body>
+
+</html>

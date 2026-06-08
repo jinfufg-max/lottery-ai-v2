@@ -1,218 +1,640 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
-<meta charset="UTF-8">
-<title>福袋商店</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body{
-    background:#062b2f;
-    color:#fff;
-    text-align:center;
-    font-family: Arial;
-    margin:0;
-    padding-top:80px;
-}
+    <title>福袋商店</title>
 
-/* 上方列 */
-.top-bar{
-    position: fixed;
-    top:0;
-    width:100%;
-    background:#041f22;
-    padding:12px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    z-index:999;
-}
+    <style>
+        body {
+            background: #062b2f;
+            color: #fff;
+            text-align: center;
+            font-family: Arial;
 
-.left{
-    margin-left:20px;
-    color:#FFD700;
-}
+            margin: 0;
+            padding-top: 45px;
 
-.right{
-    margin-right:20px;
-}
+            overflow-x: hidden;
+        }
 
-.nav-btn{
-    background:#FFD700;
-    color:#000;
-    padding:8px 14px;
-    border-radius:8px;
-    text-decoration:none;
-    font-weight:bold;
-}
+        /* 上方列 */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
 
-/* 標題 */
-h1{
-    font-size:34px;
-    margin-bottom:5px;
-}
+            width: 100%;
 
-/* 金額 */
-.money{
-    color:#FFD700;
-    font-size:24px;
-    margin:10px;
-}
+            background: #041f22;
 
-/* 🔥 主卡片（重點） */
-.store-card{
-    display:flex;
-    justify-content:center;
-    gap:50px;
-    margin-top:30px;
-    background:#0b1f2a;
-    padding:35px 50px;
-    border-radius:25px;
-    box-shadow:0 0 25px rgba(0,255,255,0.08);
-    width:fit-content;
-    margin-left:auto;
-    margin-right:auto;
-}
+            padding: 10px 15px;
 
-/* 左右區塊 */
-.box{
-    width:240px;
-}
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
 
-/* 標題 */
-.box h3{
-    color:#FFD700;
-    margin-bottom:15px;
-}
+            box-sizing: border-box;
 
-/* 說明 */
-.note{
-    white-space: nowrap;
-    color:#aaa;
-    font-size:13px;
-    margin-bottom:15px;
-}
+            z-index: 999;
+        }
 
-/* 按鈕 */
-.btn{
-    display:block;
-    margin:10px auto;
-    padding:12px;
-    width:100%;
-    background:#00c2d1;
-    color:#000;
-    text-decoration:none;
-    border-radius:10px;
-    font-weight:bold;
-    transition:0.2s;
-}
+        .left {
+            margin-left: 30px;
+            color: #FFD700;
+        }
 
-.btn:hover{
-    background:#00eaff;
-}
+        .right {
+            margin-right: 30px;
+            display: flex;
+            gap: 10px;
 
-/* 輸入框 */
-input{
-    padding:10px;
-    width:100%;
-    border-radius:8px;
-    border:none;
-    margin-top:10px;
-}
+            flex-wrap: wrap;
+        }
 
-/* 底下說明 */
-.store-note{
-    margin-top:15px;
-    color:#00ffcc;
-    font-size:14px;
-}
+        .nav-btn {
+            background: linear-gradient(180deg, #ffd900, #ffbf00);
+            color: #111;
 
-/* 進入福袋 */
-.enter-btn{
-    margin-top:40px;
-    display:inline-block;
-    padding:15px 40px;
-    background:#FFD700;
-    color:#000;
-    border-radius:12px;
-    font-size:18px;
-    font-weight:bold;
-}
-</style>
+            font-size: 20px;
+            font-weight: 900;
+
+            padding: 9px 18px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            box-shadow:
+                0 4px 12px rgba(255, 215, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+
+            transition: 0.2s;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        /* 標題 */
+        h1 {
+            font-size: 30px;
+            margin-bottom: 0px;
+        }
+
+        /* 金額 */
+        .balance-box {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFD700;
+
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .balance-sub {
+            font-size: 20px;
+            color: #aaa;
+        }
+
+        .trust-mini {
+            margin-bottom: 5px;
+        }
+
+        /* 主區 */
+        .main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            gap: 5px;
+
+            width: 100%;
+
+            padding: 0 15px;
+
+            box-sizing: border-box;
+        }
+
+        /* 卡片 */
+        .card {
+            width: 100%;
+            max-width: 800px;
+
+            background: #0b1f2a;
+
+            border-radius: 15px;
+
+            box-sizing: border-box;
+        }
+
+        /* 商城 */
+        .store {
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+            align-items: stretch;
+
+            padding: 10px;
+        }
+
+        .box {
+            flex: 1;
+            min-width: 260px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .box h2 {
+            font-size: 18px;
+            color: #FFD700;
+        }
+
+        .note {
+            font-size: 18px;
+            color: #aaa;
+
+            margin-bottom: 5px;
+        }
+
+        form {
+            width: 100%;
+        }
+
+        /* 按鈕 */
+        .btn {
+            width: 100%;
+            border: none;
+            border-radius: 14px;
+            background: #16c7d9;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            font-size: 22px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .bag-cost {
+            font-size: 18px;
+            font-weight: normal;
+            opacity: 0.85;
+        }
+
+        .btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 12px #00ffd5;
+        }
+
+        /* CTA */
+        .enter {
+            display: inline-block;
+
+            margin-top: 5px;
+
+            padding: 12px 32px;
+
+            background: #FFD700;
+            color: #000;
+
+            border-radius: 12px;
+
+            font-size: 20px;
+            font-weight: bold;
+
+            text-decoration: none;
+
+            transition: 0.2s;
+        }
+
+        .enter:hover {
+            transform: scale(1.05);
+        }
+
+        /* 福袋群組 */
+        .bag-groups {
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 15px;
+
+            max-width: 650px;
+
+            margin: 0px auto;
+
+            padding: 15px;
+        }
+
+        .bag-card {
+            padding: 14px 12px;
+
+            border-radius: 12px;
+
+            background: rgba(0, 255, 200, 0.08);
+
+            border: 1px solid rgba(0, 255, 200, 0.2);
+
+            text-align: center;
+
+            transition: 0.2s;
+        }
+
+        .bag-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(0, 255, 200, 0.3);
+        }
+
+        .bag-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ffd5;
+        }
+
+        .bag-count {
+            margin-top: 5px;
+            font-size: 18px;
+        }
+
+        /* 公益卡 */
+        .charity {
+            width: 100%;
+            max-width: 800px;
+
+            background: rgba(11, 31, 42, 0.95);
+
+            border-radius: 12px;
+
+            padding: 15px;
+
+            margin-bottom: 10px;
+
+            box-sizing: border-box;
+
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
+
+            border: 1px solid rgba(0, 255, 255, 0.15);
+        }
+
+        .charity-title {
+            font-size: 30px;
+            color: #00c2d1;
+        }
+
+        .charity-text {
+            font-size: 20px;
+            line-height: 1.8;
+        }
+
+        .charity-footer {
+            font-size: 20px;
+            margin-top: 0px;
+            color: #FFD700;
+        }
+
+        a {
+            color: #00ffd6;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #00ffd6;
+        }
+
+        .topup-green {
+            background: #63e0b5;
+            color: #111;
+        }
+
+        .topup-blue {
+            background: #42c5f5;
+            color: #111;
+        }
+
+        .topup-purple {
+            background: #ffcc00;
+            color: #111;
+        }
+
+        .topup-gold {
+            background: #b57cff;
+            color: #111;
+        }
+
+        /* 手機版 */
+        @media (max-width: 768px) {
+
+            body {
+                padding-top: 60px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .top-bar {
+                padding: 8px 10px;
+            }
+
+            .left {
+                margin-left: 0;
+                font-size: 12px;
+            }
+
+            .right {
+                margin-right: 0;
+                gap: 6px;
+            }
+
+            .nav-btn {
+                font-size: 14px;
+                padding: 7px 10px;
+            }
+
+            .store {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 18px;
+            }
+
+            .box {
+                min-width: 100%;
+            }
+
+            .box h2 {
+                font-size: 20px;
+            }
+
+            .note {
+                font-size: 13px;
+            }
+
+            .btn {
+                font-size: 18px;
+                padding: 14px 12px;
+                min-height: 58px;
+            }
+
+            .enter {
+                width: 100%;
+                box-sizing: border-box;
+                font-size: 18px;
+            }
+
+            .bag-groups {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .bag-title {
+                font-size: 18px;
+            }
+
+            .bag-count {
+                font-size: 16px;
+            }
+
+            .charity {
+                width: 100%;
+                padding: 18px;
+                margin-top: 0;
+            }
+
+            .charity-title {
+                font-size: 22px;
+            }
+
+            .charity-text {
+                font-size: 15px;
+                line-height: 1.7;
+            }
+
+            .charity-footer {
+                font-size: 16px;
+            }
+
+            .balance-box {
+                font-size: 16px;
+                margin-top: 15px;
+                margin-bottom: 15px;
+            }
+
+            .balance-sub {
+                font-size: 16px;
+            }
+
+            .trust-mini {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- 上方 -->
-<div class="top-bar">
-    <div class="left">⚠️ 僅供娛樂參考，請理性投注</div>
-    <div class="right">
-        <a href="/" class="nav-btn">🏠 首頁</a>
-    </div>
-</div>
+    <!-- 上方 -->
+    <div class="top-bar">
 
-<h1>🎁 福袋商店</h1>
-<div style="margin-top:15px; font-size:14px; color:#aaa; line-height:1.8;">
-🎯 福袋說明：<br>
-福袋系統由AI模型長時間運算分析，<br>
-透過多重數據優化組合，<br>
-使中獎機會相對提升，使用時間越長效果越穩定
-</div>
-
-<div class="money">
-💰 準提金：{{ money }}
-</div>
-
-<!-- 🔥 主卡片 -->
-<div class="store-card">
-
-    <!-- 🎁 購買 -->
-    <div class="box">
-        <h3>🎁 福袋購買</h3>
-
-    <div class="note">
-         準提金袋 ＞ 準提銀袋 ＞ 大金袋 ＞ 大銀袋
+        <div class="left">
+            ⚠️ 僅供娛樂參考
         </div>
 
-        <a href="/buy/silver" class="btn">🥈 大銀袋（50）</a>
-        <a href="/buy/gold" class="btn">🥇 大金袋（100）</a>
-        <a href="/buy/pray_silver" class="btn">✨ 準提銀袋（200）</a>
-        <a href="/buy/pray_gold" class="btn">🔥 準提金袋（1000）</a>
-    </div>
+        <div class="right">
 
-    <!-- 💰 儲值 -->
-    <div class="box">
-        <h3>💰 準提金儲值</h3>
+            <a href="/shop" class="nav-btn">
+                🛒 柑仔店
+            </a>
 
-        <div class="note">
-            提準金用於購買福袋
+            <a href="/" class="nav-btn">
+                🏠 首頁
+            </a>
+
         </div>
 
-        <a href="/topup/100" class="btn">💳 儲值 100</a>
-        <a href="/topup/500" class="btn">💳 儲值 500</a>
-
-        <form action="/topup/custom" method="POST">
-            <input 
-                type="number" 
-                name="amount" 
-                placeholder="輸入儲值金額"
-                min="1"
-                required
-            >
-            <button class="btn" type="submit">💳 立即儲值</button>
-        </form>
     </div>
 
-</div>
+    <h1>🎁 信運福袋</h1>
 
-<!-- 🔥 說明 -->
-<div class="store-note">
-提準金用於購買福袋使用
-</div>
+    <!-- 💰 錢 -->
+    <div class="balance-box">
 
-<!-- 進入福袋 -->
-<a href="/mybag" class="enter-btn">
-🎁 進入我的福袋
-</a>
+        NT$ {{ money }}
+
+        <div class="balance-sub">
+            可用準提金
+        </div>
+
+    </div>
+
+    <div class="trust-mini">
+
+        <div class="trust-sub">
+            📊 本週命中3顆：{{ hit3 }}次 ｜ 4顆：{{ hit4 }}次
+        </div>
+
+    </div>
+
+    <div class="main">
+
+        <!-- 🎁 主功能 -->
+        <div class="card store">
+
+            <!-- 購買 -->
+            <div class="box">
+
+                <h2>🎁 福袋兌換</h2>
+
+                <div class="note">
+                    🔥 福袋兌換專區
+                </div>
+
+                <form method="POST" action="/buy/silver">
+                    <button class="btn">
+                        🥈 大銀袋
+                        <span class="bag-cost">消耗 2 準提金</span>
+                    </button>
+                </form>
+
+                <form method="POST" action="/buy/gold">
+                    <button class="btn">
+                        🥇 大金袋
+                        <span class="bag-cost">消耗 3 準提金</span>
+                    </button>
+                </form>
+
+                <form method="POST" action="/buy/pray_silver">
+                    <button class="btn">
+                        ✨ 準提銀袋
+                        <span class="bag-cost">消耗 5 準提金</span>
+                    </button>
+                </form>
+
+                <form method="POST" action="/buy/pray_gold">
+                    <button class="btn">
+                        🔥 準提金袋
+                        <span class="bag-cost">消耗 10 準提金</span>
+                    </button>
+                </form>
+
+            </div>
+
+            <!-- 儲值 -->
+            <div class="box">
+
+                <h2>💰 準提金儲值</h2>
+
+                <div class="note">
+                    ⚡ 儲值可用於福袋與商城消費
+                </div>
+
+                <form method="POST" action="/topup/150">
+                    <button class="btn topup-green">
+                        🌱 儲值 補充
+                        <span class="bag-cost">🌱 補充 150 準提金</span>
+                    </button>
+                </form>
+
+                <form method="POST" action="/topup/300">
+                    <button class="btn topup-blue">
+                        ⚡ 熱門 補充
+                        <span class="bag-cost">⚡ 補充 300 準提金</span>
+                    </button>
+                </form>
+
+                <form method="POST" action="/topup/500">
+                    <button class="btn topup-purple">
+                        ✨ 進階 補充
+                        <span class="bag-cost">✨ 補充 500 準提金</span>
+                    </button>
+                </form>
+
+                <form method="POST" action="/topup/800">
+                    <button class="btn topup-gold">
+                        👑 VIP 補充
+                        <span class="bag-cost">👑 補充 800 準提金</span>
+                    </button>
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- CTA -->
+        <a href="/mybag" class="enter">
+            🎁 進入我的福袋
+        </a>
+
+        <!-- 福袋數量 -->
+        <div class="card">
+
+            <div class="bag-groups">
+
+                {% for g in groups %}
+
+                <div class="bag-card">
+
+                    <div class="bag-title">
+
+                        {{
+                        "🥈 大銀袋" if g.bag_type == "silver" else
+                        "🥇 大金袋" if g.bag_type == "gold" else
+                        "✨ 準提銀袋" if g.bag_type == "pray_silver" else
+                        "🔥 準提金袋"
+                        }}
+
+                    </div>
+
+                    <div class="bag-count">
+                        x {{ g.total }}
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <!-- 🌟 公益 -->
+        <div class="charity">
+
+            <div class="charity-title">
+                🌟 福袋公益活動
+            </div>
+
+            <div class="charity-text">
+                福袋收益 60% 用於：<br><br>
+
+                ① 急難救助（老人 / 孩童）<br>
+                ② 弱勢族群補助<br>
+                ④ 支持公益團體<br>
+                
+                ~~ 弘揚中華傳統文化宮廟修繕・興建捐助 ~~
+            </div>
+
+            <div class="charity-footer">
+                ❤️ 每一次選擇，都帶來改變
+            </div>
+
+        </div>
+
+    </div>
 
 </body>
+
 </html>

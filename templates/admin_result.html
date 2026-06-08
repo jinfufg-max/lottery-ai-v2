@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>開獎管理</title>
+
+    <style>
+        body {
+            background: #062b2f;
+            color: #fff;
+            text-align: center;
+            font-family: Arial;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            padding: 30px;
+        }
+
+        h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 22px;
+            display: block;
+            margin: 20px 0 10px;
+        }
+
+        input[type="date"] {
+            font-size: 20px;
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        /* 🎯 數字選擇 */
+        #number-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+
+        .num-btn {
+            background: #0f3d4a;
+            border-radius: 50%;
+            padding: 15px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .num-btn.active {
+            background: #00eaff;
+            color: #000;
+        }
+
+        /* ⭐ 特別號 */
+        .special-select {
+            font-size: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            width: 80px;
+        }
+
+        button {
+            font-size: 22px;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .submit-btn {
+            background: #00c3ff;
+            color: #000;
+        }
+
+        .reset-btn {
+            background: #ccc;
+            color: #000;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>📊 新增開獎結果</h2>
+
+        <h2>📊 新增開獎結果</h2>
+
+        {% if missing %}
+        <div style="background:#ff4444;color:white;padding:12px;border-radius:10px;margin-bottom:20px;font-size:18px;">
+            ⚠️ 缺漏期數：
+            <br>
+            {% for d in missing %}
+            <span style="margin-right:10px;">{{ d }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post">
+
+            <!-- 日期 -->
+            <label>📅 選擇日期</label>
+            <input type="date" id="date" name="date" required onchange="checkDate()">
+            <p id="weekday" style="color:#00eaff;"></p>
+
+            <!-- 主號碼 -->
+            <label>🎯 主號碼（點6個）</label>
+            <div id="number-grid"></div>
+            <input type="hidden" name="numbers" id="numbers">
+
+            <!-- 特別號 -->
+            <label>⭐ 特別號</label>
+            <select name="special" class="special-select">
+                {% for n in range(1,50) %}
+                <option value="{{n}}">{{n}}</option>
+                {% endfor %}
+            </select>
+
+            <br>
+
+            <!-- 按鈕 -->
+            <button type="submit" class="submit-btn" onclick="return confirm('確定送出這期開獎？')">
+                🚀 送出
+            </button>
+
+            <button type="button" class="reset-btn" onclick="resetForm()">
+                🔄 清空
+            </button>
+
+        </form>
+
+    </div>
+
+    <script>
+
+        /* 🎯 產生49個號碼 */
+        let selected = [];
+
+        for (let i = 1; i <= 49; i++) {
+            let btn = document.createElement("div");
+            btn.innerText = i;
+            btn.className = "num-btn";
+
+            btn.onclick = function () {
+
+                if (btn.classList.contains("active")) {
+                    btn.classList.remove("active");
+                    selected = selected.filter(n => n != i);
+                } else {
+
+                    if (selected.length >= 6) {
+                        alert("最多選6個");
+                        return;
+                    }
+
+                    btn.classList.add("active");
+                    selected.push(i);
+                }
+
+                document.getElementById("numbers").value = selected.join(",");
+            };
+
+            document.getElementById("number-grid").appendChild(btn);
+        }
+
+        /* 📅 日期檢查 */
+        function checkDate() {
+            let dateInput = document.getElementById("date").value;
+            let weekdayText = document.getElementById("weekday");
+
+            if (!dateInput) return;
+
+            let d = new Date(dateInput);
+            let day = d.getDay();
+
+            let map = ["日", "一", "二", "三", "四", "五", "六"];
+
+            weekdayText.innerHTML = "星期：" + map[day];
+
+            if (day !== 2 && day !== 5) {
+                alert("❌ 只能選星期二或星期五");
+                document.getElementById("date").value = "";
+                weekdayText.innerHTML = "";
+            }
+        }
+
+        /* 🔄 清空 */
+        function resetForm() {
+
+            document.getElementById("date").value = "";
+            document.getElementById("weekday").innerHTML = "";
+
+            selected = [];
+            document.getElementById("numbers").value = "";
+
+            document.querySelectorAll(".num-btn").forEach(btn => {
+                btn.classList.remove("active");
+            });
+
+            document.querySelector("select[name='special']").selectedIndex = 0;
+        }
+
+    </script>
+
+</body>
+
+</html>

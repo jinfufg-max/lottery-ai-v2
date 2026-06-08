@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-TW" translate="no">
+
+<head>
+    <meta charset="UTF-8">
+    <title>編輯商品</title>
+
+    <style>
+        body {
+            background: #062b2f;
+            color: white;
+            text-align: center;
+            font-family: Arial;
+        }
+
+        .box {
+            margin-top: 80px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 260px;
+            padding: 10px;
+            margin: 8px;
+            border-radius: 6px;
+            border: none;
+        }
+
+        textarea {
+            height: 80px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #00c8ff;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+        }
+
+        img {
+            margin-top: 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+
+        <h2>✏️ 編輯商品</h2>
+
+        <form method="POST">
+
+            <input name="name" value="{{ product['name'] }}" placeholder="商品名稱"><br>
+
+            <input name="price" value="{{ product['price'] }}" placeholder="價格"><br>
+
+            <input name="stock" value="{{ product['stock'] }}" placeholder="庫存"><br>
+
+            <!-- 主圖 -->
+            <label>主圖</label><br>
+            <select name="image1" onchange="previewMain(this.value)">
+                {% for img in images %}
+                <option value="{{ img }}" {% if img==product['image1'] %}selected{% endif %}>
+                    {{ img.split('/')[-1] }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <img id="mainPreview" src="{{ product['image1'] }}" width="120"><br>
+
+            <!-- 副圖 -->
+            <label>副圖</label><br>
+            <select name="image2" onchange="previewSub(this.value)">
+                <option value="">無</option>
+                {% for img in images %}
+                <option value="{{ img }}" {% if img==product['image2'] %}selected{% endif %}>
+                    {{ img.split('/')[-1] }}
+                </option>
+                {% endfor %}
+            </select><br>
+
+            <img id="subPreview" src="{{ product['image2'] }}" width="120"><br>
+
+            <textarea name="description">{{ product['desc'] or "" }}</textarea>
+            <button type="submit">💾 儲存修改</button>
+
+        </form>
+
+    </div>
+
+    <script>
+        function previewMain(src) {
+            document.getElementById("mainPreview").src = src;
+        }
+
+        function previewSub(src) {
+            document.getElementById("subPreview").src = src || "";
+        }
+    </script>
+
+</body>
+
+</html>

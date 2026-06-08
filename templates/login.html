@@ -1,25 +1,35 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>會員登入</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
+            margin: 0;
+            padding: 20px;
+
             background: #0b1f2a;
             color: white;
             font-family: Arial;
+
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+
+            min-height: 100vh;
         }
 
         .home-btn {
             position: absolute;
             top: 20px;
-            left: 30px;
+            left: 20px;
         }
 
         .home-btn a {
@@ -29,109 +39,229 @@
         }
 
         .card {
+
+            width: 100%;
+            max-width: 420px;
+
             background: #132f3f;
-            padding: 40px;
-            border-radius: 15px;
-            width: 340px;
+
+            padding: 35px 25px;
+
+            border-radius: 16px;
+
             text-align: center;
         }
 
+        h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
         input {
+
             width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 8px;
+
+            height: 48px;
+
+            padding: 0 14px;
+
             border: none;
+            border-radius: 10px;
+
+            font-size: 16px;
+
+            margin-bottom: 14px;
         }
 
         button {
+
             width: 100%;
-            padding: 10px;
-            background: #00c6ff;
+
+            height: 48px;
+
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
+
+            background: #00c6ff;
+
             color: white;
+
+            font-size: 20px;
             font-weight: bold;
+
             cursor: pointer;
         }
 
+        .password-box {
+
+            display: flex;
+            gap: 10px;
+
+            margin-bottom: 14px;
+        }
+
+        .password-box input {
+
+            flex: 1;
+
+            margin-bottom: 0;
+        }
+
+        .show-btn {
+
+            width: 80px;
+
+            background: #111;
+
+            font-size: 18px;
+
+            flex-shrink: 0;
+        }
+
         .register-box {
-            margin-top: 20px;
-            padding: 18px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
+
+            margin-top: 25px;
+
+            padding: 20px;
+
+            border-radius: 12px;
+
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .price {
+
             color: #00ffcc;
+
             font-weight: bold;
-            margin: 5px 0;
-            font-size: 18px;
+
+            line-height: 1.6;
+
+            margin: 10px 0;
         }
 
         .bonus {
+
             color: #ffd700;
+
             font-weight: bold;
-            margin-top: 8px;
+
+            line-height: 1.6;
+
+            margin-bottom: 15px;
         }
 
         .small {
-            font-size: 13px;
-            opacity: 0.85;
-            line-height: 1.6;
+
+            font-size: 16px;
+
+            line-height: 1.8;
+
+            opacity: 0.9;
+        }
+
+        .register-btn {
+
+            margin-top: 20px;
+
+            background: #d97706;
         }
     </style>
 </head>
+
 <body>
 
-<!-- 回首頁 -->
-<div class="home-btn">
-    <a href="/">← 回首頁</a>
-</div>
+    <div class="home-btn">
+        <a href="/">← 回首頁</a>
+    </div>
 
-<div class="card">
+    <div class="card">
 
-    <h2>會員登入</h2>
+        <h2>會員登入</h2>
 
-    <form>
-        <input type="text" placeholder="帳號">
-        <input type="password" placeholder="密碼">
+        <form action="/login" method="POST">
 
-        <button type="submit">登入</button>
-    </form>
+            <input type="text" name="username" placeholder="帳號" required>
 
-    <!-- 註冊區 -->
-    <div class="register-box">
+            <div class="password-box">
 
-        <div>還沒有帳號？</div>
+                <input type="password" id="password" name="password" placeholder="密碼" required>
 
-        <div class="price">註冊只需 NT$100</div>
+                <button type="button" class="show-btn" onclick="togglePassword()">
+                    顯示
+                </button>
 
-        <div class="bonus">
-            🎁 註冊送 150準提金 + 1個大金袋 + 2個大銀袋
-        </div>
+            </div>
 
-        <div class="small">
-            ✔ 可用準提金購買福袋<br>
-            ✔ AI推薦號分析<br>
-            ✔ 福袋系統（策略玩法）<br>
-            ✔ 對獎紀錄與歷史分析<br><br>
-
-            🤖 AI推薦：會員免費使用<br>
-            非會員每日可免費使用 1 次
-        </div>
-
-        <br>
-
-        <a href="/register">
-            <button style="background:#ff9800;">
-                立即註冊開通
+            <button type="submit">
+                登入
             </button>
-        </a>
+
+        </form>
+
+        <div class="register-box">
+
+            <div>還沒有帳號？</div>
+
+            <div class="price">
+                試運營期 註冊會員 NT$100<br>
+            </div>
+            <div class="bonus">
+                🎁 試運營期註冊會員送 150準提金抵消費<br>
+                ➕ 2個大金袋<br>
+            </div>
+            <div class="bonus">
+                💎 正式運營註冊會員 NT$199<br>(送 200準提金抵消費 ➕ 2個大金袋)
+            </div>
+            <div class="bonus">
+                ✨ 會員儲值500以上(送 ➕ 5個大金袋) ✨
+            </div>
+
+
+
+            <div class="small">
+
+                🌟 準提金：<br>
+                ✔ 可商城抵消費<br>
+                ✔ 會員享 🎲 幸運小遊戲<br>
+                ✔ 隨緣福袋<br><br>
+
+                🎲 幸運小遊戲：會員5次/天<br>
+                非會員每日可使用1次
+
+            </div>
+
+            <a href="/register">
+
+                <button type="button" class="register-btn">
+                    👉 立即加入會員
+                </button>
+
+            </a>
+
+        </div>
 
     </div>
 
-</div>
+    <script>
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+            } else {
+
+                password.type = "password";
+            }
+        }
+
+    </script>
 
 </body>
+
 </html>

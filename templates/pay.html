@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>付款結果</title>
+
+<style>
+body{
+    background:#0b1f2a;
+    color:white;
+    text-align:center;
+    font-family:Arial;
+}
+
+.box{
+    margin:100px auto;
+    width:300px;
+    padding:20px;
+    background:#12343f;
+    border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>付款確認</h2>
+
+<p>商品ID：{{ product_id }}</p>
+<p>付款方式：{{ pay_type }}</p>
+<p>商品金額：NT$ {{ total }}</p>
+<p>運費：NT$ {{ ship }}</p>
+
+<hr>
+
+<h3>總金額：NT$ {{ final }}</h3>
+
+<br>
+
+<button onclick="location.href='/shop'">回商品頁</button>
+
+</div>
+
+</body>
+</html>

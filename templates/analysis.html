@@ -1,208 +1,468 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>AI分析</title>
+    <title>AI分析</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body{
-    background:#0b1f2a;
-    color:white;
-    text-align:center;
-    padding:40px; /* ↓ 從60改40，縮高度 */
-    font-size:17px; /* ↓ 稍微降 */
-    line-height:1.7;
-}
+    <style>
+        body {
+            background: #0b1f2a;
 
-/* ❗ 解決白點問題 */
-ul{
-    list-style:none;
-    padding:0;
-    margin:0;
-}
+            color: white;
 
-button, a {
-    cursor:pointer;
-}
+            text-align: center;
 
-h2{
-    font-size:28px; /* ↓ 32 → 28 */
-    margin-bottom:15px;
-}
+            margin: 0;
 
-li{
-    margin:10px 0;
-    font-size:20px; /* ↓ 24 → 20 */
-}
+            padding: 15px;
 
-button{
-    padding:12px 24px; /* ↓ 微縮 */
-    background:#ff9800;
-    border:none;
-    border-radius:10px;
-    color:white;
-    font-size:16px; /* ↓ 18 → 16 */
-    font-weight:bold;
-    transition:0.2s;
-}
+            font-family: Arial, sans-serif;
 
-button:hover{
-    background:#ffa726;
-    transform:scale(1.05);
-}
+            font-size: 20px;
 
-.trust{
-    color:#aaa;
-    font-size:13px;
-}
+            line-height: 1.6;
 
-.highlight{
-    color:#00eaff;
-    font-weight:bold;
-}
+            overflow-x: hidden;
+        }
 
-.lock{
-    color:#ffcc00;
-    font-weight:bold;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-/* 🔥 卡片優化（關鍵） */
-.box{
-    margin:15px auto; /* ↓ 間距縮 */
-    padding:16px; /* ↓ 20 → 16 */
-    background:#082f34;
-    border-radius:12px;
-    width:100%;
-    max-width:380px; /* ⭐ 不要太窄 */
-}
+        ul {
+            list-style: none;
 
-/* 🔥 主號碼（讓它好看但不誇張） */
-.main-number{
-    font-size:34px; /* ↓ 原本太大 */
-    font-weight:bold;
-    letter-spacing:6px; /* ↓ 8 → 6 */
-    margin-top:8px;
-}
-</style>
+            padding: 0;
+            margin: 0;
+        }
+
+        a {
+            text-decoration: none;
+
+            color: inherit;
+        }
+
+        button,
+        a {
+            cursor: pointer;
+        }
+
+        /* =========================
+   標題
+========================= */
+
+        .page-title {
+            font-size: 32px;
+
+            margin: 10px 0 20px;
+
+            color: #fff;
+
+            text-shadow: 0 0 12px rgba(0, 255, 255, .25);
+        }
+
+        .section-title {
+            font-size: 22px;
+
+            margin: 10px 0;
+
+            color: #fff;
+
+            text-shadow: 0 0 12px rgba(0, 255, 255, .25);
+        }
+
+        li {
+            margin: 10px 0;
+
+            font-size: 18px;
+        }
+
+        /* =========================
+   共用文字
+========================= */
+
+        .trust {
+            color: #9aa4ad;
+
+            font-size: 18px;
+
+            line-height: 1.8;
+        }
+
+        .highlight {
+            color: #00eaff;
+
+            font-weight: bold;
+        }
+
+        .lock {
+            color: #ffcc00;
+
+            font-weight: bold;
+        }
+
+        /* =========================
+   卡片
+========================= */
+
+        .box {
+            width: 100%;
+
+            max-width: 560px;
+
+            margin: 18px auto;
+
+            padding: 5px;
+
+            background: #082f34;
+
+            border-radius: 16px;
+
+            box-shadow: 0 0 18px rgba(0, 255, 255, .08);
+        }
+
+        /* =========================
+   主號碼
+========================= */
+
+        .main-number {
+            font-size: 26px;
+
+            font-weight: bold;
+
+            letter-spacing: 4px;
+
+            line-height: 1.6;
+
+            margin-top: 10px;
+
+            word-break: break-word;
+        }
+
+        /* =========================
+   按鈕
+========================= */
+
+        .main-btn {
+            padding: 12px 24px;
+
+            background: #ff9800;
+
+            border: none;
+
+            border-radius: 10px;
+
+            color: white;
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+            transition: .2s;
+        }
+
+        .main-btn:hover {
+            background: #ffa726;
+
+            transform: translateY(-2px);
+        }
+
+        /* =========================
+   趨勢
+========================= */
+
+        .trend-box {
+            margin-top: 20px;
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            justify-content: center;
+
+            gap: 14px;
+        }
+
+        .trend-item {
+            background: #062f2f;
+
+            border: 1px solid #00ffee33;
+
+            border-radius: 14px;
+
+            padding: 14px;
+
+            width: 100%;
+
+            max-width: 240px;
+
+            text-align: center;
+
+            box-shadow: 0 0 10px #00ffee22;
+        }
+
+        .trend-item span {
+            display: block;
+
+            margin-top: 8px;
+
+            color: #00ffee;
+
+            font-size: 24px;
+
+            font-weight: bold;
+        }
+
+        /* =========================
+   回首頁
+========================= */
+
+        .home-link {
+            display: inline-block;
+
+            margin-top: 28px;
+
+            color: #00eaff;
+
+            font-size: 18px;
+
+            font-weight: bold;
+        }
+
+        /* =========================
+   MOBILE
+========================= */
+
+        @media (max-width:768px) {
+
+            body {
+                padding: 12px;
+                font-size: 15px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .section-title {
+                font-size: 21px;
+            }
+
+            li {
+                font-size: 16px;
+            }
+
+            .box {
+                padding: 16px;
+            }
+
+            .main-number {
+                font-size: 24px;
+
+                letter-spacing: 2px;
+            }
+
+            .trend-item {
+                max-width: 100%;
+            }
+
+            .main-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .home-link {
+                font-size: 16px;
+            }
+
+        }
+    </style>
 
 </head>
 
 <body>
 
-<h2>🎯 特別號交叉分析</h2>
+    <h2 class="page-title">🎯 特別號交叉分析</h2>
 
-{% if user %}
+    {% if user %}
 
-<p>特別號：{{ sp }}</p>
+    <h1 class="section-title">特別號：{{ sp }}</h1>
 
-<ul>
-{% for n, score in result %}
-<li>
-    🔥 {{ n }}
-    <span class="highlight">▲ {{ score }}%</span>
-</li>
-{% endfor %}
-</ul>
+    <ul>
 
-<p class="trust">
-※ 本分析為歷史關聯統計結果
-</p>
+        {% for n, score in result %}
 
-{% else %}
+        <li>
+            🔥 {{ n }}
+            <span class="highlight">▲ {{ score }}%</span>
+        </li>
 
-<p class="lock">
-🔒 此為AI核心分析，請登入會員查看
-</p>
+        {% endfor %}
 
-<p class="trust">
-👉 分析「特別號 {{ sp }}」出現時，最容易同時開出的號碼組合
-</p>
+    </ul>
 
-<p class="highlight">
-🔥 解鎖完整AI關聯分析 + 提升中獎機會
-</p>
+    <p class="trust">
+        ※ 本分析為歷史關聯統計結果
+    </p>
 
-<p style="font-size:14px;">
-👉 已分析 {{ sample_count }} 期歷史數據
-</p>
+    {% else %}
 
-<a href="/login">
-<button>立即解鎖AI預測</button>
-</a>
+    <p class="lock">
+        🔒 此為AI核心分析，請登入會員查看
+    </p>
 
-{% endif %}
+    <p class="trust">
+        👉 分析「特別號 {{ sp }}」出現時，
+        最容易同時開出的號碼組合
+    </p>
+
+    <p class="highlight">
+        🔥 解鎖完整AI關聯分析 + 提升中獎機會
+    </p>
+
+    <p style="font-size:14px;">
+        👉 已分析 {{ sample_count }} 期歷史數據
+    </p>
+
+    <a href="/login">
+        <button class="main-btn">
+            立即解鎖AI預測
+        </button>
+    </a>
+
+    {% endif %}
+
+    <h1 class="section-title">📊 AI數據分析（會員專屬）</h1>
+
+    {% if user %}
+
+    <!-- AI推薦 -->
+
+    <div class="box">
+
+        <div class="highlight" style="font-size:16px;">
+            🔥 AI分析參考（最佳選擇）
+        </div>
+
+        <div class="main-number">
+            {{ ai_numbers | join(' ') }}
+        </div>
+
+    </div>
+
+    <!-- 福袋 -->
+
+    <div class="box">
+
+        <p class="lock">
+            🔒 福袋組合尚未解鎖
+        </p>
+
+        <p class="trust">
+
+            目前顯示為基礎熱門推算<br>
+            完整版本已經過AI關聯 + 權重優化
+
+        </p>
+
+        <p class="highlight">
+            👉 最佳模型已封裝於福袋
+        </p>
+
+        <a href="/bag">
+
+            <button class="main-btn">
+                🎁 前往福袋解鎖
+            </button>
+
+        </a>
+
+        <p style="
+            color:#ff5252;
+            font-size:15px;
+            margin-top:8px;
+        ">
+            ⚠ 每期不同，錯過即失效
+        </p>
+
+    </div>
+
+    <!-- 趨勢 -->
+
+    <div class="trend-box">
+
+        <div class="trend-item">
+
+            🔥 熱門集中度
+
+            <span>
+                {{ hot_score }}%
+            </span>
+
+        </div>
+
+        <div class="trend-item">
+
+            📈 活躍波動值
+
+            <span>
+                {{ trend_score }}
+            </span>
+
+        </div>
+
+        <div class="trend-item">
+
+            🎯 特別號關聯度
+
+            <span>
+                {{ sp_score }}
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="trust" style="margin-top:20px;">
+
+        🔥 熱門：{{ hot | join(', ') }}
+
+        <br><br>
+
+        ❄️ 低頻：{{ cold | join(', ') }}
+
+        <br><br>
+
+        📊 期望值：{{ hit_rate }}%
+
+    </div>
+
+    {% else %}
+
+    <p class="lock">
+        🔒 登入後可查看完整AI分析
+    </p>
+
+    <p class="highlight">
+        🔥 AI已計算 {{ sample_count }} 期數據結果
+    </p>
+
+    <a href="/login">
+
+        <button class="main-btn">
+            立即登入
+        </button>
+
+    </a>
+
+    {% endif %}
 
 
-<h2>📊 AI數據分析（會員專屬）</h2>
-
-{% if user %}
-
-<!-- 🔥 AI推薦組合 -->
-<div class="box">
-
-<div class="highlight" style="font-size:16px;">
-🔥 AI推薦組合（本期最佳）
-</div>
-
-<div class="main-number">
-{{ hot | join(' ') }}
-</div>
-
-</div>
-
-<!-- 💥 福袋轉換區 -->
-<div class="box">
-
-<p class="lock">
-🔒 完整中獎組合尚未解鎖
-</p>
-
-<p class="trust">
-目前顯示為基礎熱門推算  
-完整版本已經過AI關聯 + 權重優化
-</p>
-
-<p class="highlight">
-👉 命中率提升版本已封裝於福袋
-</p>
-
-<a href="/bag">
-<button>🎁 前往福袋解鎖</button>
-</a>
-
-<p style="color:#ff5252;font-size:12px;margin-top:8px;">
-⚠ 每期不同，錯過即失效
-</p>
-
-</div>
-
-<!-- 📊 原本資料 -->
-<div class="trust" style="margin-top:20px;">
-
-🔥 熱門：{{ hot | join(', ') }}  
-｜ ❄ 冷門：{{ cold | join(', ') }}  
-｜ 📊 命中率：{{ hit_rate }}%
-
-</div>
-
-{% else %}
-
-<p class="lock">
-🔒 登入後可查看完整AI分析
-</p>
-
-<p class="highlight">
-🔥 AI已計算 {{ sample_count }} 期數據結果
-</p>
-
-<a href="/login">
-<button>立即登入</button>
-</a>
-
-{% endif %}
-
-<br>
-
-<a href="/" class="highlight">回首頁</a>
+    <a href="/" class="home-link">
+        🏠 回首頁
+    </a>
 
 </body>
+
 </html>

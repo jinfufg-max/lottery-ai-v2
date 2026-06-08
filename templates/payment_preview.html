@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <title>付款流程說明</title>
@@ -71,28 +72,29 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="card">
-    <div class="title">付款流程說明</div>
+    <div class="card">
+        <div class="title">付款流程說明</div>
 
-    <div class="price">開通費用：NT$50</div>
+        <div class="price">開通費用：NT$50</div>
 
-    <form method="POST" action="/payment-success">
+        <form method="POST" action="/payment-success">
 
-        <input type="hidden" name="username" value="{{ username }}">
-        <input type="hidden" name="password" value="{{ password }}">
+            <input type="hidden" name="username" value="{{ username }}">
+            <input type="hidden" name="password" value="{{ password }}">
 
-        <button type="submit">確認付款</button>
+            <button type="submit">確認付款</button>
 
-    </form>
+        </form>
 
-</div>
+    </div>
 
     <div class="bonus">
         🎁 完成開通後可獲得：<br>
         150 準提金<br>
-        2 個大銀袋
+        2 個大金袋
     </div>
 
     <div class="desc">
@@ -102,7 +104,8 @@
 
     <a href="/register" class="btn">返回註冊頁</a>
     <a href="/" class="back">← 回首頁</a>
-</div>
+    </div>
 
 </body>
+
 </html>
