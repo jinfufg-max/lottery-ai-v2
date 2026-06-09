@@ -254,7 +254,7 @@ def index():
 
     total_runs = total_periods * 50
 
-    # ===== AI首頁資料 =====
+   # ===== AI首頁資料 =====
     analysis_data = AI_STATE.get("analysis_data", {})
 
     ai_data = {
@@ -282,16 +282,7 @@ def index():
         all_total = sum(count.values())
 
         hot_score = round((top5_total / all_total) * 100, 1)
-
-        sorted_hot = sorted(count.items(), key=lambda x: (-x[1], x[0]))
-
-        top5_total = sum(v for _, v in sorted_hot[:5])
-
-        all_total = sum(count.values())
-
-        hot_score = round((top5_total / all_total) * 100, 1)
         
-
     # ===== 回傳 =====
     return render_template(
         "index.html",
