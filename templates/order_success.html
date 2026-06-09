@@ -89,3 +89,9 @@ h2{
     </a>
 
 </div>
+
+<script>
+fetch("/send_order_emails/{{ order_no }}")
+    .then(r => console.log("寄信完成"))
+    .catch(err => console.log(err));
+</script>

@@ -1039,8 +1039,7 @@ def checkout_cart():
                     "{}",
                     now
                 )
-            )
-             
+            )             
             
             conn.commit()
 
@@ -1087,7 +1086,9 @@ def checkout_cart():
                 order_no=order_no
             )
         )   
+
     
+
 
     cart = session.get("cart", {})
 
@@ -1394,3 +1395,60 @@ def cart_remove(pid):
     session["cart"] = cart
 
     return redirect("/cart")
+
+@shop_bp.route("/send_order_emails/<order_no>")
+def send_order_emails(order_no):
+
+    print("開始寄信:", order_no)
+
+    conn = get_shop_db()
+
+    order = conn.execute(
+        """
+        SELECT *
+        FROM orders
+        WHERE order_no=?
+        """,
+        (order_no,)
+    ).fetchone()
+
+    if not order:
+        return "NOT FOUND"
+    
+    print("AAAA")
+
+    try:
+        send_admin_order_email(
+            order_no=order["order_no"],
+            name=order["name"],
+            phone=order["phone"],
+            total=order["total"],
+            payment_type=order["payment_method"]
+        )
+
+        print("BBBB")
+    except Exception as e:
+        print("CCCC")
+        print("管理員信失敗:", e)
+
+
+        print("DDDD")
+
+    try:
+        send_order_email(
+            to_email=order["email"],
+            order_no=order["order_no"],
+            total=order["total"]
+        )
+
+        print("EEEE")
+    except Exception as e:
+
+        print("FFFF")
+        print("客戶信失敗:", e)
+
+    conn.close()
+
+    print("GGGG")
+
+    return "OK"
