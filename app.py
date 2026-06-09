@@ -265,20 +265,32 @@ def index():
 
     main_data = get_lottery_data()
 
+    print("MAIN_DATA =", main_data)
+    print("LEN =", len(main_data) if main_data else 0)
+
     flat = [n for row in main_data for n in row]
 
     count = Counter(flat)
 
     if not count:
-        return None
+        hot_score = 0
+    else:
+        sorted_hot = sorted(count.items(), key=lambda x: (-x[1], x[0]))
 
-    sorted_hot = sorted(count.items(), key=lambda x: (-x[1], x[0]))
+        top5_total = sum(v for _, v in sorted_hot[:5])
 
-    top5_total = sum(v for _, v in sorted_hot[:5])
+        all_total = sum(count.values())
 
-    all_total = sum(count.values())
+        hot_score = round((top5_total / all_total) * 100, 1)
 
-    hot_score = round((top5_total / all_total) * 100, 1)
+        sorted_hot = sorted(count.items(), key=lambda x: (-x[1], x[0]))
+
+        top5_total = sum(v for _, v in sorted_hot[:5])
+
+        all_total = sum(count.values())
+
+        hot_score = round((top5_total / all_total) * 100, 1)
+        
 
     # ===== 回傳 =====
     return render_template(

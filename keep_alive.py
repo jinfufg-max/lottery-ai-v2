@@ -1,7 +1,7 @@
 import time
 import requests
 
-URL = "https://lottery-ai-app.onrender.com"
+URL = "https://lottery-shop-prod.onrender.com"
 
 while True:
     try:
@@ -10,4 +10,4 @@ while True:
     except:
         print("Ping失敗")
 
-    time.sleep(180)  # 每3分鐘
+    time.sleep(300)  # 每5分鐘
