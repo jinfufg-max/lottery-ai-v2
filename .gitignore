@@ -5,6 +5,6 @@ __pycache__/
 
 error.log
 
-# *.db
-# *.db-wal
-# *.db-shm
+*.db
+*.db-wal
+*.db-shm
