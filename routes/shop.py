@@ -1085,9 +1085,7 @@ def checkout_cart():
                 "payment.ecpay_checkout",
                 order_no=order_no
             )
-        )   
-
-    
+        )      
 
 
     cart = session.get("cart", {})
